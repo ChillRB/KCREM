@@ -1,0 +1,3419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kamino Cell — Radiation Emergency Manual</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────────
+   TOKENS
+───────────────────────────────────────── */
+:root {
+  --bg:        #c6e0ec;
+  --bg2:       #d4eaf4;
+  --surface:   rgba(255,255,255,0.72);
+  --card:      rgba(255,255,255,0.88);
+  --nav-bg:    rgba(255,255,255,0.82);
+
+  --border:    rgba(120,180,210,0.32);
+  --border2:   rgba(120,180,210,0.55);
+
+  --txt:       #08263a;
+  --txt2:      #1c5268;
+  --txt3:      #3a7a98;
+  --txt4:      #6aaac8;
+
+  --ac:        #0d7a96;
+  --ac-lt:     #29aece;
+  --ac-dk:     #085c72;
+  --ac-pale:   rgba(13,122,150,0.08);
+  --ac-glow:   rgba(13,122,150,0.18);
+
+  --red:       #bf3b2e;
+  --red-lt:    #e04b3c;
+  --red-dk:    #8f2a20;
+  --red-pale:  rgba(191,59,46,0.07);
+
+  --sh:        0 2px 16px rgba(8,50,80,0.08), 0 1px 4px rgba(8,50,80,0.05);
+  --sh-md:     0 6px 32px rgba(8,50,80,0.12), 0 2px 8px rgba(8,50,80,0.07);
+  --sh-lg:     0 12px 48px rgba(8,50,80,0.14), 0 4px 16px rgba(8,50,80,0.08);
+
+  --r:         10px;
+  --r-lg:      18px;
+  --r-xl:      26px;
+
+  --ff-d:  'Lora', Georgia, serif;
+  --ff-b:  'Plus Jakarta Sans', sans-serif;
+  --ff-m:  'DM Mono', monospace;
+
+  --nav-w: 220px;
+}
+
+/* ─────────────────────────────────────────
+   RESET + BASE
+───────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--txt);
+  font-family: var(--ff-b);
+  font-size: 16px;
+  line-height: 1.72;
+  overflow-x: hidden;
+  padding-right: calc(var(--nav-w) + 24px);
+  min-height: 100vh;
+}
+/* subtle wave texture */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 100%, rgba(255,255,255,0.22) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 80% 0%,   rgba(255,255,255,0.15) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(13,122,150,0.25); border-radius: 4px; }
+
+/* ─────────────────────────────────────────
+   PROGRESS BAR
+───────────────────────────────────────── */
+#progress {
+  position: fixed; top: 0; left: 0; height: 2px;
+  background: linear-gradient(to right, var(--ac-dk), var(--ac-lt));
+  z-index: 9999; width: 0%;
+  transition: width 0.1s linear, background 0.5s;
+}
+
+/* ─────────────────────────────────────────
+   RIGHT NAV CARD
+───────────────────────────────────────── */
+#mainNav {
+  position: fixed;
+  right: 16px; top: 50%;
+  transform: translateY(-50%);
+  width: var(--nav-w);
+  background: var(--nav-bg);
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+  border: 1px solid rgba(200,230,242,0.6);
+  border-radius: var(--r-xl);
+  box-shadow: var(--sh-md);
+  z-index: 100;
+  display: flex; flex-direction: column;
+  max-height: 90vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  animation: navIn 0.6s 0.2s cubic-bezier(0.22,1,0.36,1) both;
+}
+@keyframes navIn {
+  from { opacity: 0; transform: translateY(-50%) translateX(18px); }
+  to   { opacity: 1; transform: translateY(-50%) translateX(0); }
+}
+#mainNav::-webkit-scrollbar { width: 0; }
+
+.nav-brand {
+  padding: 1.5rem 1.4rem 1.1rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.nav-brand-name {
+  font-family: var(--ff-d);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 1.1rem;
+  color: var(--ac);
+  letter-spacing: 0.02em;
+  line-height: 1;
+  margin-bottom: 0.35rem;
+  display: flex; align-items: center; gap: 0.45rem;
+}
+.nav-pulse {
+  width: 6px; height: 6px;
+  background: var(--ac);
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: pulse 2.5s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 var(--ac-glow); }
+  50%      { opacity: 0.4; transform: scale(0.85); box-shadow: 0 0 0 5px transparent; }
+}
+.nav-brand-sub {
+  font-family: var(--ff-b);
+  font-weight: 500;
+  font-size: 0.53rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--txt3);
+  line-height: 1.5;
+}
+
+.nav-body { flex: 1; padding: 0.5rem 0 0.5rem; }
+
+.nav-section { margin-bottom: 0.05rem; }
+
+.nav-section-hd {
+  display: flex; align-items: center; gap: 0.4rem;
+  padding: 0.65rem 1.3rem 0.22rem;
+}
+.nav-section-num {
+  font-family: var(--ff-d);
+  font-style: italic;
+  font-size: 0.65rem;
+  color: var(--ac-dk);
+  opacity: 0.4;
+  flex-shrink: 0;
+  min-width: 14px;
+}
+.nav-section-label {
+  font-family: var(--ff-b);
+  font-weight: 500;
+  font-size: 0.44rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--txt4);
+}
+.nav-rule {
+  flex: 1; height: 1px;
+  background: var(--border);
+}
+
+.nav-links { list-style: none; padding: 0 0.6rem; }
+.nav-links li a {
+  display: block;
+  font-family: var(--ff-b);
+  font-weight: 400;
+  font-size: 0.8rem;
+  color: var(--txt2);
+  text-decoration: none;
+  padding: 0.36rem 0.8rem;
+  border-radius: 9px;
+  transition: background 0.2s, color 0.2s, padding-left 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nav-links li a:hover {
+  background: var(--ac-pale);
+  color: var(--ac);
+  padding-left: 1.1rem;
+}
+.nav-links li a.active {
+  background: rgba(13,122,150,0.12);
+  color: var(--ac);
+  font-weight: 600;
+}
+
+.nav-emerg-hd .nav-section-num { color: var(--red-dk); opacity: 0.45; }
+.nav-emerg-hd .nav-section-label { color: rgba(191,59,46,0.55); }
+.nav-emerg-hd .nav-rule { background: rgba(191,59,46,0.2); }
+.nav-emerg-link a { color: var(--red-dk) !important; }
+.nav-emerg-link a:hover { background: var(--red-pale) !important; color: var(--red) !important; }
+.nav-emerg-link a.active { background: rgba(191,59,46,0.1) !important; color: var(--red) !important; font-weight:600; }
+
+.nav-footer {
+  flex-shrink: 0;
+  padding: 0.9rem 1.4rem 1.1rem;
+  border-top: 1px solid var(--border);
+}
+.nav-footer-text {
+  font-family: var(--ff-m);
+  font-size: 0.42rem;
+  letter-spacing: 0.1em;
+  color: var(--txt4);
+  line-height: 1.9;
+}
+.nav-footer-id {
+  font-family: var(--ff-d);
+  font-style: italic;
+  font-size: 0.62rem;
+  color: rgba(13,122,150,0.32);
+  margin-top: 0.25rem;
+}
+
+/* mobile toggle */
+.nav-toggle {
+  display: none;
+  position: fixed; top: 1rem; right: 1rem;
+  width: 40px; height: 40px; z-index: 200;
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 10px; color: var(--ac);
+  font-size: 1.1rem; cursor: pointer;
+  align-items: center; justify-content: center;
+  box-shadow: var(--sh);
+}
+@media (max-width: 900px) {
+  body { padding-right: 0; }
+  #mainNav {
+    right: 0; top: 0; bottom: 0;
+    transform: none; border-radius: 0;
+    max-height: 100vh;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s;
+  }
+  #mainNav.open { opacity: 1; pointer-events: auto; }
+  .nav-toggle { display: flex; }
+}
+
+/* ─────────────────────────────────────────
+   WRAPPER
+───────────────────────────────────────── */
+.wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 2rem 10rem;
+  position: relative; z-index: 1;
+}
+
+/* ─────────────────────────────────────────
+   HEADER
+───────────────────────────────────────── */
+header {
+  padding: 4rem 2rem 3.5rem;
+  text-align: center;
+  position: relative; z-index: 1;
+}
+.header-eyebrow {
+  font-family: var(--ff-m);
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  color: var(--ac);
+  margin-bottom: 1.2rem;
+  opacity: 0;
+  animation: fadeUp 0.6s 0.1s ease both;
+}
+.header-eyebrow span {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 30px; padding: 0.3rem 1rem;
+  box-shadow: var(--sh);
+}
+.header-eyebrow-dot {
+  width: 5px; height: 5px; background: var(--red);
+  border-radius: 50%; animation: pulse 1.8s ease-in-out infinite;
+}
+.header-title {
+  font-family: var(--ff-d);
+  font-size: clamp(2.4rem, 6vw, 4.2rem);
+  font-weight: 400;
+  color: var(--txt);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.4rem;
+  opacity: 0;
+  animation: fadeUp 0.6s 0.2s ease both;
+}
+.header-title em {
+  font-style: italic;
+  color: var(--ac);
+}
+.header-sub {
+  font-family: var(--ff-b);
+  font-size: 0.88rem;
+  color: var(--txt3);
+  letter-spacing: 0.04em;
+  opacity: 0;
+  animation: fadeUp 0.6s 0.3s ease both;
+  margin-bottom: 2rem;
+}
+.header-divider {
+  display: flex; align-items: center; gap: 1rem;
+  max-width: 500px; margin: 0 auto;
+  opacity: 0; animation: fadeUp 0.6s 0.4s ease both;
+}
+.header-divider::before, .header-divider::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(to right, transparent, var(--border2), transparent);
+}
+.header-divider span {
+  font-family: var(--ff-m); font-size: 0.52rem;
+  letter-spacing: 0.18em; color: var(--txt3);
+  white-space: nowrap;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─────────────────────────────────────────
+   KAMINO STATS
+───────────────────────────────────────── */
+.kamino-stats {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: var(--r-xl);
+  box-shadow: var(--sh-md);
+  overflow: hidden;
+  margin-bottom: 2rem;
+  position: relative;
+}
+.stats-glow {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 60% 50% at 80% 50%, rgba(13,122,150,0.06), transparent);
+}
+.stats-inner {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2rem;
+  align-items: center;
+  padding: 2rem 2.2rem;
+}
+@media (max-width:680px) { .stats-inner { grid-template-columns: 1fr; } }
+.stats-eyebrow {
+  font-family: var(--ff-m); font-size: 0.52rem;
+  letter-spacing: 0.22em; color: var(--ac-dk);
+  margin-bottom: 0.5rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.stats-eyebrow::before { content:''; width:20px; height:1px; background:var(--ac-dk); }
+.stats-planet {
+  font-family: var(--ff-d);
+  font-style: italic;
+  font-size: 2.8rem;
+  color: var(--txt);
+  line-height: 1;
+  margin-bottom: 0.2rem;
+}
+.stats-planet span { color: var(--ac); }
+.stats-class {
+  font-family: var(--ff-m); font-size: 0.52rem;
+  letter-spacing: 0.14em; color: var(--txt3);
+  margin-bottom: 1.4rem;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.7rem;
+}
+@media (max-width:500px) { .stats-grid { grid-template-columns: repeat(2,1fr); } }
+.stat-cell {
+  background: rgba(255,255,255,0.55);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 0.7rem 0.9rem;
+  transition: background 0.2s, border-color 0.2s;
+}
+.stat-cell:hover { background: rgba(255,255,255,0.85); border-color: var(--border2); }
+.stat-label {
+  font-family: var(--ff-m); font-size: 0.48rem;
+  letter-spacing: 0.18em; color: var(--txt3);
+  margin-bottom: 0.2rem;
+}
+.stat-value {
+  font-family: var(--ff-b); font-weight: 700;
+  font-size: 1.05rem; color: var(--txt);
+  line-height: 1.1;
+}
+.stat-value.ac { color: var(--ac); }
+.stat-value.warn { color: #c07a10; }
+.stat-sub {
+  font-family: var(--ff-m); font-size: 0.46rem;
+  color: var(--txt3); margin-top: 0.1rem;
+}
+/* Planet diagram */
+.planet-wrap {
+  position: relative; width: 160px; height: 160px;
+  flex-shrink: 0;
+}
+.storm-ring {
+  position: absolute; border-radius: 50%;
+  border: 1px solid rgba(13,122,150,0.25);
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  animation: stormRing 4s ease-out infinite;
+}
+.storm-ring:nth-child(2) { animation-delay: 1.4s; }
+.storm-ring:nth-child(3) { animation-delay: 2.8s; }
+@keyframes stormRing {
+  0%   { width:0; height:0; opacity:0.7; }
+  100% { width:200px; height:200px; opacity:0; }
+}
+
+/* ─────────────────────────────────────────
+   RADIATION METER
+───────────────────────────────────────── */
+#rad-meter {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh);
+  padding: 1.3rem 1.6rem;
+  margin-bottom: 2rem;
+  display: flex; align-items: center; gap: 1.5rem;
+  flex-wrap: wrap;
+  position: relative;
+}
+#rad-meter::before {
+  content: '◉ LIVE SENSOR FEED';
+  position: absolute; top: 0.6rem; right: 1rem;
+  font-family: var(--ff-m); font-size: 0.46rem;
+  letter-spacing: 0.18em; color: var(--ac-dk); opacity: 0.6;
+}
+.meter-label { font-family: var(--ff-m); font-size: 0.55rem; letter-spacing: 0.16em; color: var(--txt3); flex-shrink:0; min-width:110px; }
+.meter-label span { display:block; font-family: var(--ff-b); font-weight:700; font-size:1.4rem; color:var(--ac); margin-top:0.2rem; }
+.meter-bar-wrap { flex:1; min-width:180px; }
+.meter-track { height:5px; background:rgba(13,122,150,0.1); border-radius:3px; overflow:hidden; }
+.meter-fill { height:100%; background: linear-gradient(to right, var(--ac-dk), var(--ac-lt)); border-radius:3px; animation: meterScan 3s ease-in-out infinite; }
+@keyframes meterScan { 0%{width:12%;opacity:.5} 40%{width:62%;opacity:1} 60%{width:62%;opacity:1} 100%{width:12%;opacity:.5} }
+.meter-ticks { display:flex; justify-content:space-between; margin-top:0.4rem; }
+.meter-ticks span { font-family:var(--ff-m); font-size:0.44rem; color:var(--txt3); }
+.meter-stats { font-family:var(--ff-m); font-size:0.52rem; color:var(--txt3); line-height:2; }
+
+/* ─────────────────────────────────────────
+   CHAPTER BANNERS
+───────────────────────────────────────── */
+.chapter-banner {
+  display: flex; align-items: center; gap: 1.4rem;
+  margin: 3.5rem 0 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border2);
+  position: relative;
+}
+.chapter-banner::after {
+  content:''; position:absolute; bottom:-1px; left:0; width:60px; height:1px;
+  background: var(--ac);
+  transition: width 0.4s ease;
+}
+.chapter-num {
+  font-family: var(--ff-d); font-style: italic;
+  font-size: 3.2rem; color: var(--ac);
+  opacity: 0.18; line-height: 1;
+  flex-shrink: 0; user-select: none;
+}
+.chapter-meta { flex: 1; }
+.chapter-eyebrow {
+  font-family: var(--ff-m); font-size: 0.52rem;
+  letter-spacing: 0.2em; color: var(--txt3);
+  margin-bottom: 0.2rem;
+}
+.chapter-title {
+  font-family: var(--ff-d); font-weight: 500;
+  font-size: 1.9rem; color: var(--txt);
+  line-height: 1.1;
+}
+.chapter-title em { font-style: italic; color: var(--ac); }
+.chapter-desc {
+  font-family: var(--ff-b); font-size: 0.82rem;
+  color: var(--txt3); margin-top: 0.35rem; line-height: 1.5;
+}
+
+/* ─────────────────────────────────────────
+   SECTIONS
+───────────────────────────────────────── */
+.section {
+  margin: 3rem 0;
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+.section.visible { opacity:1; transform:translateY(0); }
+.section-hd {
+  display: flex; align-items: flex-start; gap: 1.2rem;
+  padding-bottom: 1rem; margin-bottom: 1.6rem;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.section-hd::after {
+  content: ''; position: absolute; bottom: -1px; left: 0;
+  width: 40px; height: 1px; background: var(--ac);
+  transition: width 0.4s ease;
+}
+.section:hover .section-hd::after { width: 100px; }
+.sec-num {
+  font-family: var(--ff-d); font-style: italic;
+  font-size: 2rem; color: var(--ac); opacity: 0.25;
+  flex-shrink: 0; line-height: 1; user-select: none;
+}
+.sec-tag {
+  font-family: var(--ff-m); font-size: 0.5rem;
+  letter-spacing: 0.2em; color: var(--txt3); margin-bottom: 0.15rem;
+}
+.sec-title {
+  font-family: var(--ff-d); font-weight: 500;
+  font-size: 1.55rem; color: var(--txt); line-height: 1.1;
+}
+.sec-title em { font-style: italic; color: var(--ac); }
+
+/* ─────────────────────────────────────────
+   BODY TEXT
+───────────────────────────────────────── */
+.bp {
+  font-size: 0.96rem; color: var(--txt2);
+  line-height: 1.78; margin-bottom: 1.1rem;
+}
+.bp strong { color: var(--txt); font-weight: 600; }
+.bp em { color: var(--ac); font-style: italic; }
+
+/* Explainer */
+.explainer {
+  background: rgba(255,255,255,0.55);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--ac);
+  border-radius: 0 var(--r) var(--r) 0;
+  padding: 1.1rem 1.4rem;
+  margin: 1.3rem 0;
+  position: relative;
+}
+.explainer::before {
+  content: 'Plain English';
+  position: absolute; top: -0.58rem; left: 1rem;
+  font-family: var(--ff-d); font-style: italic;
+  font-size: 0.62rem; color: var(--ac);
+  background: var(--bg2); padding: 0 0.4rem;
+}
+.explainer p { font-size: 0.9rem; color: var(--txt2); font-style: italic; line-height: 1.72; }
+
+/* Callout */
+.callout {
+  display: flex; gap: 1rem;
+  padding: 1.1rem 1.4rem;
+  background: rgba(255,255,255,0.55);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--ac);
+  border-radius: 0 var(--r) var(--r) 0;
+  margin: 1.3rem 0;
+}
+.callout-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.1rem; }
+.callout-content { font-size: 0.9rem; color: var(--txt2); line-height: 1.65; }
+.callout-content strong {
+  font-family: var(--ff-b); font-weight: 700; font-size: 0.72rem;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--ac); display: block; margin-bottom: 0.25rem;
+}
+
+/* ─────────────────────────────────────────
+   CARDS
+───────────────────────────────────────── */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1rem; margin: 1.3rem 0;
+}
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 1.4rem;
+  box-shadow: var(--sh);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s;
+}
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--sh-md);
+  border-color: var(--border2);
+}
+.card-icon { font-size: 1.6rem; margin-bottom: 0.7rem; display: block; }
+.card-num {
+  font-family: var(--ff-m); font-size: 0.5rem;
+  letter-spacing: 0.18em; color: var(--ac);
+  margin-bottom: 0.35rem;
+}
+.card-title {
+  font-family: var(--ff-d); font-weight: 500;
+  font-size: 1.1rem; color: var(--txt);
+  margin-bottom: 0.5rem; line-height: 1.2;
+}
+.card-body { font-size: 0.85rem; color: var(--txt2); line-height: 1.65; }
+
+/* Safe grid */
+.safe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.8rem; margin: 1.3rem 0;
+}
+.safe-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 1.1rem;
+  box-shadow: var(--sh);
+  transition: transform 0.2s, border-color 0.2s;
+}
+.safe-card:hover { transform: translateY(-2px); border-color: var(--border2); }
+.safe-card-icon { font-size: 1.3rem; margin-bottom: 0.4rem; }
+.safe-card-label {
+  font-family: var(--ff-m); font-size: 0.47rem;
+  letter-spacing: 0.15em; color: var(--txt3); margin-bottom: 0.25rem;
+}
+.safe-card-val {
+  font-family: var(--ff-b); font-weight: 700;
+  font-size: 1.3rem; color: var(--txt); line-height: 1.1; margin-bottom: 0.2rem;
+}
+.safe-card-body { font-size: 0.78rem; color: var(--txt3); line-height: 1.5; }
+
+/* Rule list */
+.rule-list { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; margin: 1.3rem 0; }
+.rule-list li {
+  display: flex; align-items: flex-start; gap: 0.9rem;
+  padding: 0.9rem 1.1rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-left: 3px solid rgba(13,122,150,0.3);
+  border-radius: 0 var(--r) var(--r) 0;
+  font-size: 0.88rem; line-height: 1.6;
+  transition: border-left-color 0.2s, transform 0.18s;
+  box-shadow: var(--sh);
+}
+.rule-list li:hover { border-left-color: var(--ac); transform: translateX(3px); }
+.rule-list li .ri { flex-shrink: 0; font-size: 1rem; margin-top: 0.1rem; }
+.rule-list li .rt { color: var(--txt2); }
+.rule-list li .rt strong {
+  font-family: var(--ff-m); font-size: 0.6rem;
+  letter-spacing: 0.12em; color: var(--ac);
+  display: block; margin-bottom: 0.15rem;
+}
+
+/* ─────────────────────────────────────────
+   GRAPH + DIAGRAM WRAPPERS
+───────────────────────────────────────── */
+.graph-wrap {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 1.4rem;
+  margin: 1.3rem 0;
+  box-shadow: var(--sh);
+  position: relative; overflow: hidden;
+}
+.graph-wrap::before {
+  content: attr(data-label);
+  position: absolute; top: 0.7rem; right: 1rem;
+  font-family: var(--ff-m); font-size: 0.46rem;
+  letter-spacing: 0.12em; color: var(--txt4);
+}
+.graph-title {
+  font-family: var(--ff-m); font-size: 0.58rem;
+  letter-spacing: 0.14em; color: var(--txt3);
+  text-align: center; margin-bottom: 0.8rem;
+}
+canvas { display: block; width: 100% !important; }
+.diagram-wrap {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--ac);
+  border-radius: var(--r-lg);
+  padding: 1.4rem;
+  margin: 1.3rem 0;
+  box-shadow: var(--sh);
+  position: relative;
+}
+.diagram-wrap::before {
+  content: attr(data-label);
+  position: absolute; top: -0.62rem; left: 1.2rem;
+  font-family: var(--ff-m); font-size: 0.5rem;
+  letter-spacing: 0.14em; color: var(--ac);
+  background: var(--card);
+  border: 1px solid rgba(13,122,150,0.2);
+  border-radius: 20px; padding: 0.1rem 0.6rem;
+}
+.diagram-title {
+  font-family: var(--ff-m); font-size: 0.56rem;
+  letter-spacing: 0.12em; color: var(--txt3);
+  text-align: center; margin-bottom: 0.8rem;
+}
+
+/* ─────────────────────────────────────────
+   PMAT INTERACTIVE
+───────────────────────────────────────── */
+.pmat-grid {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: 0.8rem; margin: 1.2rem 0;
+}
+@media(max-width:640px) { .pmat-grid { grid-template-columns: repeat(2,1fr); } }
+.pmat-card {
+  background: rgba(255,255,255,0.6);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 0.9rem;
+  text-align: center; cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+}
+.pmat-card:hover { background: rgba(255,255,255,0.9); border-color: var(--border2); transform: translateY(-2px); }
+.pmat-card.active { background: var(--card); border-color: var(--ac); box-shadow: var(--sh); }
+.pmat-card canvas { display: block; margin: 0 auto; }
+.pmat-label {
+  font-family: var(--ff-d); font-style: italic;
+  font-size: 0.88rem; color: var(--txt); margin-top: 0.4rem;
+}
+.pmat-sub {
+  font-family: var(--ff-m); font-size: 0.48rem;
+  letter-spacing: 0.1em; color: var(--ac); margin-top: 0.1rem;
+}
+.pmat-detail {
+  display: none; margin-top: 0.8rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 1.4rem;
+  animation: fadeUp 0.3s ease both;
+  box-shadow: var(--sh);
+}
+.pmat-detail.show { display: block; }
+.pmat-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem; }
+@media(max-width:580px) { .pmat-cols { grid-template-columns: 1fr; } }
+.pmat-n, .pmat-d { padding: 0.9rem; border-radius: var(--r); }
+.pmat-n { background: rgba(46,139,87,0.05); border: 1px solid rgba(46,139,87,0.2); }
+.pmat-d { background: rgba(191,59,46,0.05); border: 1px solid rgba(191,59,46,0.18); }
+.pmat-mode-label {
+  font-family: var(--ff-m); font-size: 0.55rem;
+  letter-spacing: 0.15em; margin-bottom: 0.6rem;
+}
+.pmat-n .pmat-mode-label { color: #2e8b57; }
+.pmat-d .pmat-mode-label { color: var(--red); }
+.pmat-mode-text { font-size: 0.85rem; color: var(--txt2); line-height: 1.7; }
+.pmat-mode-text strong { color: var(--txt); font-weight: 600; }
+
+/* ─────────────────────────────────────────
+   EXPOSURE TABLE
+───────────────────────────────────────── */
+.exposure-table {
+  width: 100%; border-collapse: collapse;
+  margin: 1.3rem 0; font-size: 0.84rem;
+  background: var(--card); border-radius: var(--r-lg);
+  overflow: hidden; box-shadow: var(--sh);
+}
+.exposure-table thead tr { background: rgba(13,122,150,0.07); }
+.exposure-table th {
+  font-family: var(--ff-m); font-size: 0.54rem;
+  letter-spacing: 0.14em; color: var(--ac);
+  text-align: left; padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border2);
+}
+.exposure-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--txt2); vertical-align: top;
+  transition: background 0.15s;
+}
+.exposure-table tr:last-child td { border-bottom: none; }
+.exposure-table tr:hover td { background: rgba(13,122,150,0.03); }
+.badge {
+  font-family: var(--ff-m); font-size: 0.52rem;
+  letter-spacing: 0.1em; padding: 0.18rem 0.55rem;
+  border-radius: 20px; display: inline-block; white-space: nowrap;
+}
+.b-safe { color: #2e7d54; background: rgba(46,125,84,0.1); border: 1px solid rgba(46,125,84,0.25); }
+.b-low  { color: var(--ac-dk); background: var(--ac-pale); border: 1px solid rgba(13,122,150,0.2); }
+.b-elev { color: #a07818; background: rgba(200,160,0,0.08); border: 1px solid rgba(200,160,0,0.25); }
+.b-high { color: var(--red-dk); background: var(--red-pale); border: 1px solid rgba(191,59,46,0.2); }
+.b-crit { color: var(--red); background: rgba(191,59,46,0.1); border: 1px solid rgba(191,59,46,0.3); font-weight:700; }
+
+/* ─────────────────────────────────────────
+   DIVIDERS
+───────────────────────────────────────── */
+.divider {
+  display: flex; align-items: center; gap: 1rem;
+  margin: 2.5rem 0;
+}
+.divider::before, .divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+.divider span {
+  font-family: var(--ff-m); font-size: 0.5rem;
+  letter-spacing: 0.25em; color: var(--txt3);
+}
+
+/* ─────────────────────────────────────────
+   EMERGENCY ZONE
+───────────────────────────────────────── */
+.zone-emerg { position: relative; }
+.zone-emerg::before {
+  content: ''; position: absolute;
+  top: 0; left: -30px; right: -30px; bottom: 0;
+  background: radial-gradient(ellipse 80% 300px at 50% 0%, rgba(191,59,46,0.04), transparent);
+  pointer-events: none; z-index: 0;
+}
+.zone-emerg .chapter-banner::after { background: var(--red); }
+.zone-emerg .chapter-num { color: var(--red); opacity: 0.15; }
+.zone-emerg .chapter-title em { color: var(--red); }
+.zone-emerg .section-hd::after { background: var(--red); }
+.zone-emerg .sec-title em { color: var(--red); }
+.zone-emerg .sec-num { color: var(--red); opacity: 0.2; }
+.zone-emerg .rule-list li { border-left-color: rgba(191,59,46,0.3); }
+.zone-emerg .rule-list li:hover { border-left-color: var(--red); }
+.zone-emerg .rule-list li .rt strong { color: var(--red); }
+.zone-emerg .card { border-top: 2px solid rgba(191,59,46,0.35); }
+.zone-emerg .card:hover { border-color: rgba(191,59,46,0.4); }
+.zone-emerg .card-num { color: var(--red); }
+.zone-emerg .callout { border-left-color: var(--red); }
+.zone-emerg .callout-content strong { color: var(--red); }
+.zone-emerg .diagram-wrap { border-top-color: var(--red); }
+.zone-emerg .diagram-wrap::before { color: var(--red); border-color: rgba(191,59,46,0.2); }
+
+/* Alert banner */
+.extreme-alert {
+  background: rgba(255,255,255,0.75);
+  border: 1px solid rgba(191,59,46,0.22);
+  border-left: 4px solid var(--red);
+  border-radius: 0 var(--r-lg) var(--r-lg) 0;
+  padding: 1.6rem 1.8rem;
+  margin-bottom: 2rem;
+  position: relative; z-index: 1;
+  box-shadow: var(--sh-md);
+}
+.alert-ticker {
+  font-family: var(--ff-m); font-size: 0.58rem;
+  letter-spacing: 0.04em; color: rgba(191,59,46,0.6);
+  border-bottom: 1px solid rgba(191,59,46,0.12);
+  padding-bottom: 0.6rem; margin-bottom: 1rem;
+  overflow: hidden; white-space: nowrap;
+}
+.alert-ticker-inner { display: inline-block; animation: ticker 22s linear infinite; }
+@keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+.alert-inner { display: flex; align-items: flex-start; gap: 1.2rem; }
+.alert-symbol { font-size: 2.2rem; flex-shrink: 0; line-height: 1; }
+.alert-status {
+  font-family: var(--ff-b); font-weight: 700;
+  font-size: 0.65rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--red);
+  margin-bottom: 0.35rem;
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.alert-status::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--red); flex-shrink: 0;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+.alert-headline {
+  font-family: var(--ff-d); font-weight: 500;
+  font-size: 1.65rem; color: var(--txt); line-height: 1.15;
+  margin-bottom: 0.45rem;
+}
+.alert-headline em { font-style: italic; color: var(--red); }
+.alert-body { font-size: 0.88rem; color: var(--txt2); line-height: 1.7; max-width: 600px; }
+.alert-body strong { color: var(--txt); font-weight: 600; }
+.alert-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.85rem; }
+.alert-chip {
+  font-family: var(--ff-b); font-weight: 600;
+  font-size: 0.7rem; letter-spacing: 0.04em;
+  border: 1px solid rgba(191,59,46,0.22);
+  color: var(--red-dk); padding: 0.25rem 0.75rem;
+  background: var(--red-pale); border-radius: 20px;
+  display: flex; align-items: center; gap: 0.3rem;
+}
+.alert-chip .chip-num { font-weight: 800; color: var(--red); font-size: 0.82rem; }
+
+/* Emergency steps */
+.e-steps { display: flex; flex-direction: column; gap: 1.1rem; margin-top: 1.5rem; position: relative; z-index:1; }
+.e-step {
+  display: grid; grid-template-columns: 64px 1fr;
+  background: var(--card);
+  border: 1px solid rgba(191,59,46,0.18);
+  border-radius: var(--r-lg);
+  overflow: hidden; box-shadow: var(--sh);
+  transition: box-shadow 0.2s;
+}
+.e-step:hover { box-shadow: var(--sh-md); }
+@media(max-width:500px) { .e-step { grid-template-columns: 48px 1fr; } }
+.e-step-side {
+  background: var(--red-pale);
+  display: flex; align-items: center; justify-content: center;
+  border-right: 1px solid rgba(191,59,46,0.15);
+}
+.e-step-num {
+  font-family: var(--ff-d); font-style: italic;
+  font-size: 2.6rem; color: var(--red); line-height: 1;
+}
+.e-step-body { padding: 1.3rem; }
+.e-step-title {
+  font-family: var(--ff-d); font-weight: 500;
+  font-size: 1.3rem; color: var(--txt); margin-bottom: 0.4rem;
+}
+.e-step-title em { font-style: italic; color: var(--red); }
+.e-step-text { font-size: 0.88rem; color: var(--txt2); line-height: 1.72; margin-bottom: 0.8rem; }
+.e-step-text strong { color: var(--txt); font-weight: 600; }
+.e-checklist { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; }
+.e-checklist li {
+  display: flex; align-items: flex-start; gap: 0.55rem;
+  font-family: var(--ff-b); font-size: 0.78rem; color: var(--txt2); line-height: 1.6;
+  padding: 0.4rem 0.6rem; border-radius: 7px;
+  background: rgba(191,59,46,0.03);
+  border: 1px solid rgba(191,59,46,0.1);
+  transition: background 0.15s;
+}
+.e-checklist li:hover { background: var(--red-pale); }
+.e-checklist li::before { content: '→'; color: var(--red); flex-shrink: 0; font-weight: 600; }
+.e-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.75rem; }
+.e-tag {
+  font-family: var(--ff-b); font-weight: 600; font-size: 0.65rem;
+  color: var(--red-dk); border: 1px solid rgba(191,59,46,0.22);
+  padding: 0.18rem 0.55rem; background: var(--red-pale); border-radius: 20px;
+}
+
+/* Post-event */
+.post-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.85rem; margin: 1.2rem 0; }
+.post-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-top: 2px solid rgba(191,59,46,0.3);
+  border-radius: var(--r-lg); padding: 1.1rem;
+  box-shadow: var(--sh); transition: transform 0.2s, border-color 0.2s;
+}
+.post-card:hover { transform: translateY(-2px); border-color: rgba(191,59,46,0.4); }
+.post-card-icon { font-size: 1.35rem; margin-bottom: 0.4rem; }
+.post-card-title { font-family: var(--ff-b); font-weight: 700; font-size: 0.85rem; color: var(--txt); margin-bottom: 0.35rem; line-height: 1.2; }
+.post-card-body { font-size: 0.78rem; color: var(--txt2); line-height: 1.55; }
+.post-card-body strong { color: var(--red-dk); }
+
+/* Symptom chips */
+.symptom-row { display: flex; flex-wrap: wrap; gap: 0.45rem; margin: 1rem 0; }
+.schip {
+  font-family: var(--ff-b); font-weight: 500; font-size: 0.73rem;
+  padding: 0.25rem 0.7rem; border: 1px solid var(--border);
+  color: var(--txt2); background: var(--card); border-radius: 20px;
+  transition: all 0.15s; cursor: default;
+}
+.schip:hover { border-color: var(--red); color: var(--red-dk); background: var(--red-pale); }
+.schip.warn { border-color: rgba(191,59,46,0.28); color: rgba(143,42,32,0.85); background: rgba(240,170,60,0.07); }
+.schip.crit { border-color: rgba(191,59,46,0.38); color: var(--red-dk); background: var(--red-pale); }
+
+/* Channels */
+.channels-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 0.85rem; margin: 1.2rem 0; }
+.channel-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 1rem;
+  box-shadow: var(--sh); transition: border-color 0.2s;
+}
+.channel-card:hover { border-color: rgba(191,59,46,0.35); }
+.ch-label { font-family: var(--ff-m); font-size: 0.48rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--txt3); margin-bottom: 0.2rem; }
+.ch-id { font-family: var(--ff-b); font-weight: 800; font-size: 1.25rem; color: var(--red); line-height: 1.1; margin-bottom: 0.25rem; }
+.ch-desc { font-size: 0.78rem; color: var(--txt2); line-height: 1.5; }
+
+/* ─────────────────────────────────────────
+   FOOTER
+───────────────────────────────────────── */
+footer {
+  padding: 2rem 2rem 3rem;
+  text-align: center;
+  border-top: 1px solid var(--border);
+  margin-top: 1rem;
+}
+.footer-logo {
+  font-family: var(--ff-d); font-style: italic;
+  font-size: 1.4rem; color: var(--ac-dk);
+  margin-bottom: 0.4rem;
+}
+.footer-meta {
+  font-family: var(--ff-m); font-size: 0.5rem;
+  letter-spacing: 0.14em; color: var(--txt3); line-height: 2.2;
+}
+
+/* ─────────────────────────────────────────
+   SCROLL TO TOP
+───────────────────────────────────────── */
+.scroll-top {
+  position: fixed; bottom: 5.5rem; right: calc(var(--nav-w) + 28px);
+  width: 38px; height: 38px;
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 50%; color: var(--ac); font-size: 1rem;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 0.25s, transform 0.25s, box-shadow 0.2s;
+  z-index: 90; box-shadow: var(--sh);
+}
+.scroll-top.show { opacity: 1; transform: translateY(0); }
+.scroll-top:hover { box-shadow: var(--sh-md); }
+@media(max-width:900px) { .scroll-top { right: 1rem; } }
+
+/* ─────────────────────────────────────────
+   BOTTOM BROCHURE BANNER (fixed, centred)
+───────────────────────────────────────── */
+.brochure-banner {
+  position: fixed;
+  bottom: 18px;
+  left: calc(50% - var(--nav-w)/2);
+  transform: translateX(-50%);
+  width: 480px;
+  max-width: calc(100vw - 260px);
+  background: rgba(255,255,255,0.86);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  border: 1px solid rgba(180,215,230,0.55);
+  border-radius: 14px;
+  box-shadow: var(--sh-lg);
+  padding: 0.85rem 1.3rem;
+  display: flex; align-items: center; gap: 1rem;
+  z-index: 80;
+  animation: bannerUp 0.7s 0.5s cubic-bezier(0.22,1,0.36,1) both;
+}
+@keyframes bannerUp {
+  from { opacity:0; transform: translateX(-50%) translateY(14px); }
+  to   { opacity:1; transform: translateX(-50%) translateY(0); }
+}
+.bb-icon {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: var(--ac-pale);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.15rem; flex-shrink: 0;
+}
+.bb-text { flex: 1; }
+.bb-title { font-family: var(--ff-b); font-weight: 600; font-size: 0.78rem; color: var(--txt); margin-bottom: 0.12rem; }
+.bb-body  { font-family: var(--ff-b); font-size: 0.68rem; color: var(--txt3); line-height: 1.45; }
+.bb-pill {
+  font-family: var(--ff-b); font-weight: 600; font-size: 0.6rem;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--ac); background: var(--ac-pale);
+  border: 1px solid rgba(13,122,150,0.2);
+  padding: 0.28rem 0.75rem; border-radius: 20px;
+  flex-shrink: 0; white-space: nowrap;
+}
+
+/* ─────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────── */
+@media(max-width:900px) {
+  .brochure-banner { left: 50%; max-width: calc(100vw - 40px); }
+}
+@media(max-width:600px) {
+  .wrapper { padding: 0 1rem 9rem; }
+  .header-title { font-size: 2.2rem; }
+  .chapter-title { font-size: 1.5rem; }
+  .sec-title { font-size: 1.25rem; }
+  .card-grid, .safe-grid, .channels-grid, .post-grid { grid-template-columns: 1fr; }
+  .e-step { grid-template-columns: 48px 1fr; }
+  .brochure-banner { flex-wrap: wrap; }
+  .bb-pill { width: 100%; text-align: center; }
+}
+
+/* ───────────────────────────────────────────
+   INTERACTIVE DISTANCE SLIDER
+─────────────────────────────────────────── */
+.dist-slider-wrap {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: var(--r-xl);
+  padding: 1.6rem 1.8rem 1.4rem;
+  margin: 1.2rem 0;
+  box-shadow: var(--sh);
+}
+.dist-slider-wrap h4 {
+  font-family: var(--ff-d); font-style: italic; font-weight: 500;
+  font-size: 1rem; color: var(--txt); margin-bottom: 0.2rem;
+}
+.dist-slider-wrap p {
+  font-family: var(--ff-b); font-size: 0.78rem; color: var(--txt3);
+  margin-bottom: 1.2rem; line-height: 1.5;
+}
+.dist-slider {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 5px;
+  background: linear-gradient(to right, var(--ac) var(--pct,40%), rgba(13,122,150,0.15) var(--pct,40%));
+  border-radius: 3px; outline: none; cursor: pointer;
+  transition: background 0.15s;
+}
+.dist-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: white; border: 2px solid var(--ac);
+  box-shadow: 0 2px 8px rgba(13,122,150,0.25);
+  cursor: grab; transition: box-shadow 0.15s, transform 0.15s;
+}
+.dist-slider::-webkit-slider-thumb:active {
+  cursor: grabbing; transform: scale(1.15);
+  box-shadow: 0 3px 14px rgba(13,122,150,0.35);
+}
+.dist-slider::-moz-range-thumb {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: white; border: 2px solid var(--ac);
+  box-shadow: 0 2px 8px rgba(13,122,150,0.25); cursor: grab;
+}
+.dist-readout {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-top: 1rem; flex-wrap: wrap; gap: 0.8rem;
+}
+.dist-stat {
+  text-align: center; flex: 1; min-width: 100px;
+}
+.dist-stat-val {
+  font-family: var(--ff-b); font-weight: 700;
+  font-size: 1.8rem; color: var(--ac); line-height: 1;
+  transition: color 0.3s;
+}
+.dist-stat-val.danger { color: var(--red); }
+.dist-stat-val.warn   { color: #c07a10; }
+.dist-stat-label {
+  font-family: var(--ff-m); font-size: 0.48rem;
+  letter-spacing: 0.14em; color: var(--txt3); margin-top: 0.2rem;
+}
+.dist-bar-wrap {
+  flex: 2; min-width: 180px;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  gap: 0.3rem;
+}
+.dist-bar-track {
+  height: 10px; background: rgba(13,122,150,0.1);
+  border-radius: 5px; overflow: hidden;
+}
+.dist-bar-fill {
+  height: 100%; border-radius: 5px;
+  background: linear-gradient(to right, var(--ac-dk), var(--ac-lt));
+  transition: width 0.25s ease, background 0.3s;
+}
+.dist-bar-label {
+  font-family: var(--ff-m); font-size: 0.48rem;
+  letter-spacing: 0.1em; color: var(--txt3);
+}
+.dist-ticks {
+  display: flex; justify-content: space-between;
+  margin-top: 0.4rem;
+}
+.dist-ticks span {
+  font-family: var(--ff-m); font-size: 0.44rem; color: var(--txt4);
+}
+
+/* ───────────────────────────────────────────
+   DOSE CALCULATOR
+─────────────────────────────────────────── */
+.dose-calc {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: var(--r-xl);
+  padding: 1.6rem 1.8rem;
+  margin: 1.2rem 0;
+  box-shadow: var(--sh);
+}
+.dose-calc h4 {
+  font-family: var(--ff-d); font-style: italic; font-weight: 500;
+  font-size: 1rem; color: var(--txt); margin-bottom: 0.2rem;
+}
+.dose-calc p {
+  font-family: var(--ff-b); font-size: 0.78rem; color: var(--txt3);
+  margin-bottom: 1.2rem; line-height: 1.5;
+}
+.dose-inputs {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1rem; margin-bottom: 1.2rem;
+}
+@media(max-width:500px) { .dose-inputs { grid-template-columns: 1fr; } }
+.dose-field { display: flex; flex-direction: column; gap: 0.3rem; }
+.dose-field label {
+  font-family: var(--ff-m); font-size: 0.5rem;
+  letter-spacing: 0.14em; color: var(--txt3);
+}
+.dose-select, .dose-input {
+  font-family: var(--ff-b); font-size: 0.88rem;
+  color: var(--txt); background: rgba(255,255,255,0.7);
+  border: 1px solid var(--border2); border-radius: var(--r);
+  padding: 0.55rem 0.8rem; outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+}
+.dose-select:focus, .dose-input:focus {
+  border-color: var(--ac);
+  box-shadow: 0 0 0 3px rgba(13,122,150,0.12);
+}
+.dose-result {
+  border-radius: var(--r-lg); padding: 1.1rem 1.4rem;
+  border: 1px solid var(--border);
+  background: rgba(13,122,150,0.05);
+  transition: all 0.35s ease;
+  display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap;
+}
+.dose-result.safe   { background:rgba(46,125,84,0.06);  border-color:rgba(46,125,84,0.25); }
+.dose-result.low    { background:rgba(13,122,150,0.06); border-color:rgba(13,122,150,0.25); }
+.dose-result.warn   { background:rgba(192,120,16,0.07); border-color:rgba(192,120,16,0.28); }
+.dose-result.high   { background:rgba(191,59,46,0.07);  border-color:rgba(191,59,46,0.28); }
+.dose-result.crit   { background:rgba(191,59,46,0.12);  border-color:rgba(191,59,46,0.4); }
+.dose-number {
+  font-family: var(--ff-b); font-weight: 800;
+  font-size: 2.4rem; line-height: 1;
+  color: var(--ac); transition: color 0.3s;
+  flex-shrink: 0;
+}
+.dose-number.safe   { color: #2e7d54; }
+.dose-number.low    { color: var(--ac); }
+.dose-number.warn   { color: #c07a10; }
+.dose-number.high   { color: var(--red-dk); }
+.dose-number.crit   { color: var(--red); }
+.dose-text { flex: 1; }
+.dose-status {
+  font-family: var(--ff-b); font-weight: 700;
+  font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase;
+  margin-bottom: 0.2rem; color: var(--ac);
+  transition: color 0.3s;
+}
+.dose-status.safe { color: #2e7d54; }
+.dose-status.warn { color: #c07a10; }
+.dose-status.high, .dose-status.crit { color: var(--red); }
+.dose-advice {
+  font-family: var(--ff-b); font-size: 0.8rem;
+  color: var(--txt2); line-height: 1.55;
+}
+
+/* ───────────────────────────────────────────
+   SHIFT TIMER
+─────────────────────────────────────────── */
+.shift-timer {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: var(--r-xl);
+  padding: 1.4rem 1.8rem;
+  margin: 1.2rem 0;
+  box-shadow: var(--sh);
+  display: flex; align-items: center; gap: 1.6rem; flex-wrap: wrap;
+}
+.timer-clock {
+  text-align: center; flex-shrink: 0;
+}
+.timer-digits {
+  font-family: var(--ff-m); font-size: 2.8rem; font-weight: 500;
+  color: var(--ac); line-height: 1; letter-spacing: 0.04em;
+  transition: color 0.3s;
+}
+.timer-digits.urgent { color: var(--red); }
+.timer-label {
+  font-family: var(--ff-m); font-size: 0.46rem;
+  letter-spacing: 0.18em; color: var(--txt4); margin-top: 0.2rem;
+}
+.timer-ring {
+  width: 80px; height: 80px; flex-shrink: 0;
+}
+.timer-ring circle { transition: stroke-dashoffset 0.5s linear; }
+.timer-body { flex: 1; min-width: 160px; }
+.timer-body h4 {
+  font-family: var(--ff-d); font-style: italic; font-weight: 500;
+  font-size: 0.95rem; color: var(--txt); margin-bottom: 0.15rem;
+}
+.timer-body p {
+  font-family: var(--ff-b); font-size: 0.75rem; color: var(--txt3); line-height: 1.5;
+}
+.timer-btns {
+  display: flex; gap: 0.6rem; margin-top: 0.8rem; flex-wrap: wrap;
+}
+.timer-btn {
+  font-family: var(--ff-b); font-weight: 600;
+  font-size: 0.75rem; letter-spacing: 0.04em;
+  padding: 0.45rem 1rem; border-radius: 20px;
+  cursor: pointer; border: 1px solid var(--border2);
+  transition: all 0.18s; background: transparent;
+  color: var(--txt2);
+}
+.timer-btn:hover { background: var(--ac-pale); border-color: var(--ac); color: var(--ac); }
+.timer-btn.primary {
+  background: var(--ac); color: white; border-color: var(--ac);
+}
+.timer-btn.primary:hover { background: var(--ac-dk); border-color: var(--ac-dk); }
+.timer-btn.danger {
+  border-color: rgba(191,59,46,0.35); color: var(--red-dk);
+}
+.timer-btn.danger:hover { background: var(--red-pale); border-color: var(--red); color: var(--red); }
+
+/* ───────────────────────────────────────────
+   TAPPABLE EMERGENCY CHECKLIST
+─────────────────────────────────────────── */
+.e-checklist li {
+  cursor: pointer; user-select: none;
+  padding-left: 0.8rem;
+  transition: background 0.18s, opacity 0.2s;
+}
+.e-checklist li.checked {
+  opacity: 0.55;
+  background: rgba(46,125,84,0.08) !important;
+  border-color: rgba(46,125,84,0.25) !important;
+  text-decoration: line-through;
+}
+.e-checklist li.checked::before { content: '✓'; color: #2e8b57 !important; }
+.e-step-progress {
+  display: flex; align-items: center; gap: 0.6rem;
+  margin-top: 0.7rem; padding-top: 0.7rem;
+  border-top: 1px solid rgba(191,59,46,0.12);
+}
+.e-step-progress-bar {
+  flex: 1; height: 4px;
+  background: rgba(191,59,46,0.1); border-radius: 2px; overflow: hidden;
+}
+.e-step-progress-fill {
+  height: 100%; width: 0%; border-radius: 2px;
+  background: linear-gradient(to right, var(--red-dk), var(--red-lt));
+  transition: width 0.3s ease;
+}
+.e-step-progress-text {
+  font-family: var(--ff-m); font-size: 0.48rem;
+  letter-spacing: 0.12em; color: var(--red-dk);
+  flex-shrink: 0; white-space: nowrap;
+}
+.e-reset-btn {
+  font-family: var(--ff-b); font-weight: 600; font-size: 0.68rem;
+  color: var(--txt3); background: none; border: none;
+  cursor: pointer; padding: 0; text-decoration: underline;
+  opacity: 0.7; transition: opacity 0.15s;
+}
+.e-reset-btn:hover { opacity: 1; color: var(--red-dk); }
+
+
+/* ════ CHANNEL CARDS — clickable ════ */
+.channel-card {
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+.channel-card.active {
+  border-color: rgba(191,59,46,0.55) !important;
+  box-shadow: 0 4px 20px rgba(191,59,46,0.12);
+  transform: translateY(-2px);
+}
+.ch-tune {
+  font-family: var(--ff-m);
+  font-size: 0.42rem; letter-spacing: 0.14em;
+  color: rgba(191,59,46,0.45); margin-top: 0.4rem;
+  display: flex; align-items: center; gap: 0.35rem;
+  transition: color 0.2s;
+}
+.channel-card:hover .ch-tune,
+.channel-card.active .ch-tune { color: var(--red); }
+.ch-tune::before {
+  content: '';
+  width: 5px; height: 5px; border-radius: 50%;
+  background: currentColor; flex-shrink: 0;
+}
+
+/* ════ TRANSMISSION PREVIEW PANEL ════ */
+.tx-panel {
+  background: rgba(8, 20, 30, 0.96);
+  border: 1px solid rgba(191,59,46,0.3);
+  border-radius: var(--r-lg);
+  margin-top: 1.2rem;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(8,20,30,0.25);
+  display: none;
+  animation: txSlideIn 0.32s cubic-bezier(0.22,1,0.36,1) both;
+}
+.tx-panel.open { display: block; }
+@keyframes txSlideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.tx-header {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 0.85rem 1.3rem;
+  background: rgba(191,59,46,0.12);
+  border-bottom: 1px solid rgba(191,59,46,0.2);
+}
+.tx-signal {
+  display: flex; gap: 3px; align-items: flex-end;
+  flex-shrink: 0;
+}
+.tx-bar {
+  width: 3px; border-radius: 2px;
+  background: var(--red-lt);
+  animation: txBar 1.2s ease-in-out infinite;
+}
+.tx-bar:nth-child(1) { height: 6px;  animation-delay: 0s; }
+.tx-bar:nth-child(2) { height: 10px; animation-delay: 0.15s; }
+.tx-bar:nth-child(3) { height: 14px; animation-delay: 0.3s; }
+.tx-bar:nth-child(4) { height: 10px; animation-delay: 0.45s; }
+.tx-bar:nth-child(5) { height: 6px;  animation-delay: 0.6s; }
+@keyframes txBar {
+  0%,100% { opacity: 0.3; }
+  50%      { opacity: 1; }
+}
+.tx-meta { flex: 1; }
+.tx-channel-id {
+  font-family: var(--ff-m); font-weight: 500;
+  font-size: 0.82rem; letter-spacing: 0.1em;
+  color: #e74c3c; line-height: 1;
+}
+.tx-channel-name {
+  font-family: var(--ff-m); font-size: 0.48rem;
+  letter-spacing: 0.14em; color: rgba(230,180,180,0.55);
+  margin-top: 0.15rem;
+}
+.tx-timestamp {
+  font-family: var(--ff-m); font-size: 0.46rem;
+  letter-spacing: 0.1em; color: rgba(230,180,180,0.4);
+}
+.tx-close {
+  background: none; border: none; color: rgba(230,180,180,0.5);
+  cursor: pointer; font-size: 1rem; line-height: 1; padding: 0.2rem;
+  transition: color 0.15s; flex-shrink: 0;
+}
+.tx-close:hover { color: #e74c3c; }
+
+.tx-body {
+  padding: 1.1rem 1.3rem 1.3rem;
+}
+.tx-from {
+  font-family: var(--ff-m); font-size: 0.5rem;
+  letter-spacing: 0.14em; color: rgba(230,180,180,0.45);
+  margin-bottom: 0.6rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.tx-from::before {
+  content: '▶';
+  color: rgba(191,59,46,0.6); font-size: 0.5rem;
+}
+.tx-message {
+  font-family: var(--ff-m);
+  font-size: 0.78rem; line-height: 1.75;
+  color: rgba(220,240,248,0.9);
+  white-space: pre-wrap;
+  min-height: 3rem;
+}
+.tx-cursor {
+  display: inline-block;
+  width: 7px; height: 1em;
+  background: #e74c3c;
+  vertical-align: text-bottom;
+  margin-left: 1px;
+  animation: blink 0.9s step-end infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+.tx-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  border-top: 1px solid rgba(191,59,46,0.12);
+  padding: 0.65rem 1.3rem 0.8rem;
+}
+.tx-status {
+  font-family: var(--ff-m); font-size: 0.46rem;
+  letter-spacing: 0.12em; color: rgba(130,200,180,0.6);
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.tx-status::before {
+  content: ''; width: 5px; height: 5px; border-radius: 50%;
+  background: #2ec28e; flex-shrink: 0;
+}
+.tx-freq {
+  font-family: var(--ff-m); font-size: 0.46rem;
+  letter-spacing: 0.12em; color: rgba(230,180,180,0.3);
+}
+
+/* ════ RAD KNOWLEDGE QUIZ ════ */
+.quiz-wrap {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 1.5rem 1.6rem;
+  margin: 1.4rem 0;
+  box-shadow: var(--sh);
+}
+.quiz-title {
+  font-family: var(--ff-d); font-style: italic;
+  font-size: 1.1rem; color: var(--txt);
+  margin-bottom: 0.25rem;
+}
+.quiz-subtitle {
+  font-family: var(--ff-m); font-size: 0.5rem;
+  letter-spacing: 0.14em; color: var(--txt3);
+  margin-bottom: 1.2rem;
+}
+.quiz-q {
+  font-family: var(--ff-b); font-weight: 600;
+  font-size: 0.95rem; color: var(--txt);
+  margin-bottom: 0.85rem; line-height: 1.5;
+}
+.quiz-opts { display: flex; flex-direction: column; gap: 0.5rem; }
+.quiz-opt {
+  font-family: var(--ff-b); font-size: 0.84rem;
+  color: var(--txt2);
+  background: rgba(255,255,255,0.5);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 0.65rem 1rem;
+  cursor: pointer; text-align: left;
+  transition: background 0.18s, border-color 0.18s, transform 0.15s;
+}
+.quiz-opt:hover { background: var(--ac-pale); border-color: var(--border2); transform: translateX(3px); }
+.quiz-opt.correct { background: rgba(46,139,87,0.1); border-color: rgba(46,139,87,0.4); color: #2e6b4a; }
+.quiz-opt.wrong   { background: var(--red-pale);          border-color: rgba(191,59,46,0.3);  color: var(--red-dk); }
+.quiz-opt:disabled { cursor: default; transform: none; }
+.quiz-result {
+  margin-top: 0.85rem;
+  font-family: var(--ff-b); font-size: 0.86rem;
+  color: var(--txt2); line-height: 1.6;
+  display: none;
+}
+.quiz-result.show { display: block; }
+.quiz-result strong { color: var(--ac); font-weight: 700; }
+.quiz-result.win strong { color: #2e7d54; }
+.quiz-result.lose strong { color: var(--red); }
+.quiz-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 1rem;
+}
+.quiz-progress {
+  font-family: var(--ff-m); font-size: 0.5rem;
+  letter-spacing: 0.12em; color: var(--txt3);
+}
+.quiz-btn {
+  font-family: var(--ff-b); font-weight: 600;
+  font-size: 0.78rem; color: var(--ac);
+  background: var(--ac-pale); border: 1px solid rgba(13,122,150,0.2);
+  border-radius: 20px; padding: 0.35rem 1rem;
+  cursor: pointer; display: none;
+  transition: background 0.18s;
+}
+.quiz-btn.show { display: block; }
+.quiz-btn:hover { background: rgba(13,122,150,0.14); }
+.quiz-score {
+  text-align: center; padding: 1rem 0;
+  font-family: var(--ff-d); font-style: italic;
+  font-size: 1.5rem; color: var(--txt);
+  display: none;
+}
+.quiz-score.show { display: block; }
+.quiz-score span { color: var(--ac); }
+
+/* ════ ZONE EXPOSURE CALCULATOR ════ */
+.dose-calc {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 1.4rem 1.6rem;
+  margin: 1.4rem 0;
+  box-shadow: var(--sh);
+}
+.dose-calc h4 {
+  font-family: var(--ff-d); font-style: italic;
+  font-size: 1.05rem; color: var(--txt);
+  margin-bottom: 0.2rem;
+}
+.dose-calc p {
+  font-family: var(--ff-m); font-size: 0.5rem;
+  letter-spacing: 0.14em; color: var(--txt3);
+  margin-bottom: 1.1rem;
+}
+.dose-row {
+  display: flex; flex-wrap: wrap; gap: 1.2rem;
+  align-items: flex-end; margin-bottom: 1rem;
+}
+.dose-field { display: flex; flex-direction: column; gap: 0.3rem; }
+.dose-field label {
+  font-family: var(--ff-m); font-size: 0.5rem;
+  letter-spacing: 0.14em; color: var(--txt3);
+}
+.dose-field select,
+.dose-field input[type=number] {
+  font-family: var(--ff-b); font-size: 0.84rem;
+  color: var(--txt);
+  background: rgba(255,255,255,0.7);
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  padding: 0.45rem 0.75rem;
+  outline: none; cursor: pointer;
+  transition: border-color 0.18s;
+}
+.dose-field select:focus,
+.dose-field input[type=number]:focus { border-color: var(--ac); }
+.dose-field input[type=number] { width: 90px; }
+.dose-result {
+  display: grid; grid-template-columns: auto 1fr;
+  gap: 0.5rem 1.2rem; align-items: start;
+}
+.dose-num {
+  font-family: var(--ff-b); font-weight: 800;
+  font-size: 2.4rem; color: var(--ac); line-height: 1;
+  grid-row: 1/3;
+}
+.dose-unit {
+  font-family: var(--ff-m); font-size: 0.5rem;
+  letter-spacing: 0.12em; color: var(--txt3);
+  align-self: end; margin-bottom: 0.1rem;
+}
+.dose-advice {
+  font-family: var(--ff-b); font-size: 0.82rem;
+  color: var(--txt2); line-height: 1.55;
+}
+
+
+/* ─── GEIGER COUNTER ─── */
+.geiger-wrap {
+  display:flex; align-items:center; gap:1.2rem; flex-wrap:wrap;
+  background:rgba(255,255,255,0.55); border:1px solid var(--border);
+  border-radius:var(--r-lg); padding:.9rem 1.2rem; margin-top:.8rem;
+}
+.geiger-canvas-wrap { flex-shrink:0; }
+.geiger-info { flex:1; min-width:120px; }
+.geiger-rate {
+  font-family:var(--ff-m); font-size:1.6rem; font-weight:500;
+  color:var(--ac); line-height:1; letter-spacing:.04em;
+  transition:color .3s;
+}
+.geiger-rate.warn  { color:#c07a10; }
+.geiger-rate.danger{ color:var(--red); }
+.geiger-unit { font-family:var(--ff-m); font-size:.52rem; letter-spacing:.14em; color:var(--txt3); margin:.15rem 0 .5rem; }
+.geiger-controls { display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.4rem; }
+.geiger-btn {
+  font-family:var(--ff-b); font-weight:600; font-size:.7rem;
+  padding:.3rem .8rem; border-radius:20px; cursor:pointer;
+  border:1px solid var(--border2); background:transparent; color:var(--txt2);
+  transition:all .18s;
+}
+.geiger-btn:hover { background:var(--ac-pale); border-color:var(--ac); color:var(--ac); }
+.geiger-btn.active { background:var(--ac); color:white; border-color:var(--ac); }
+
+/* ─── SHIELDING CALCULATOR ─── */
+.shield-calc {
+  background:var(--card); border:1px solid var(--border2);
+  border-radius:var(--r-xl); padding:1.6rem 1.8rem;
+  margin:1.2rem 0; box-shadow:var(--sh);
+}
+.shield-calc h4 { font-family:var(--ff-d); font-style:italic; font-weight:500; font-size:1rem; color:var(--txt); margin-bottom:.2rem; }
+.shield-calc > p { font-family:var(--ff-b); font-size:.78rem; color:var(--txt3); line-height:1.5; margin-bottom:1.2rem; }
+.shield-inputs { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.2rem; }
+@media(max-width:480px) { .shield-inputs { grid-template-columns:1fr; } }
+.shield-field { display:flex; flex-direction:column; gap:.3rem; }
+.shield-field label { font-family:var(--ff-m); font-size:.5rem; letter-spacing:.14em; color:var(--txt3); }
+.shield-vis {
+  display:flex; align-items:flex-end; gap:1.8rem; flex-wrap:wrap;
+  background:rgba(255,255,255,0.5); border:1px solid var(--border);
+  border-radius:var(--r-lg); padding:1.2rem 1.4rem; margin-top:.4rem;
+}
+.shield-bar-col { flex:1; min-width:120px; }
+.shield-bar-label { font-family:var(--ff-m); font-size:.48rem; letter-spacing:.12em; color:var(--txt3); margin-bottom:.4rem; }
+.shield-bar-track { height:120px; background:rgba(13,122,150,.08); border-radius:6px 6px 0 0; position:relative; overflow:hidden; }
+.shield-bar-fill { position:absolute; bottom:0; left:0; right:0; border-radius:6px 6px 0 0; transition:height .5s ease, background .4s; }
+.shield-bar-val { font-family:var(--ff-b); font-weight:700; font-size:1.1rem; margin-top:.4rem; transition:color .3s; }
+.shield-arrow { font-size:1.6rem; color:var(--border2); align-self:center; }
+.shield-verdict {
+  margin-top:1rem; padding:.9rem 1.2rem;
+  border-radius:var(--r-lg); border:1px solid var(--border);
+  font-family:var(--ff-b); font-size:.84rem; color:var(--txt2);
+  background:rgba(255,255,255,.5); transition:background .4s, border-color .4s;
+  display:flex; align-items:center; gap:.8rem;
+}
+.shield-verdict-icon { font-size:1.3rem; flex-shrink:0; }
+.shield-verdict.good  { background:rgba(46,125,84,.06); border-color:rgba(46,125,84,.25); }
+.shield-verdict.ok    { background:rgba(13,122,150,.06); border-color:rgba(13,122,150,.25); }
+.shield-verdict.warn  { background:rgba(192,120,16,.07); border-color:rgba(192,120,16,.28); }
+.shield-verdict.bad   { background:rgba(191,59,46,.07); border-color:rgba(191,59,46,.28); }
+
+/* ─── SYMPTOM TRIAGE ─── */
+.triage-wrap {
+  background:var(--card); border:1px solid var(--border2);
+  border-radius:var(--r-xl); padding:1.6rem 1.8rem;
+  margin:1.2rem 0; box-shadow:var(--sh);
+}
+.triage-wrap h4 { font-family:var(--ff-d); font-style:italic; font-weight:500; font-size:1rem; color:var(--txt); margin-bottom:.2rem; }
+.triage-wrap > p { font-family:var(--ff-b); font-size:.78rem; color:var(--txt3); line-height:1.5; margin-bottom:1rem; }
+.triage-chips { display:flex; flex-wrap:wrap; gap:.45rem; margin-bottom:1.1rem; }
+.tchip {
+  font-family:var(--ff-b); font-weight:500; font-size:.78rem;
+  padding:.3rem .8rem; border:1px solid var(--border2);
+  border-radius:20px; cursor:pointer; color:var(--txt2);
+  background:rgba(255,255,255,.6);
+  transition:all .18s; user-select:none;
+}
+.tchip:hover { border-color:var(--ac); color:var(--ac); background:var(--ac-pale); }
+.tchip.selected {
+  background:rgba(191,59,46,.1); border-color:rgba(191,59,46,.4);
+  color:var(--red-dk); font-weight:600;
+}
+.triage-result {
+  border-radius:var(--r-lg); padding:1rem 1.3rem;
+  border:1px solid var(--border); background:rgba(255,255,255,.5);
+  transition:all .35s; display:flex; gap:1rem; align-items:flex-start;
+}
+.triage-result.none  { background:rgba(13,122,150,.05); border-color:rgba(13,122,150,.2); }
+.triage-result.low   { background:rgba(192,120,16,.06); border-color:rgba(192,120,16,.3); }
+.triage-result.high  { background:rgba(191,59,46,.08);  border-color:rgba(191,59,46,.3); }
+.triage-result.crit  { background:rgba(191,59,46,.13);  border-color:rgba(191,59,46,.5); }
+.triage-sev-icon { font-size:1.8rem; flex-shrink:0; }
+.triage-sev-title { font-family:var(--ff-b); font-weight:700; font-size:.8rem; text-transform:uppercase; letter-spacing:.06em; margin-bottom:.25rem; color:var(--ac); transition:color .3s; }
+.triage-result.low  .triage-sev-title { color:#c07a10; }
+.triage-result.high .triage-sev-title,
+.triage-result.crit .triage-sev-title { color:var(--red); }
+.triage-sev-text { font-family:var(--ff-b); font-size:.82rem; color:var(--txt2); line-height:1.6; }
+.triage-sev-text strong { color:var(--txt); }
+.triage-reset { font-family:var(--ff-b); font-size:.72rem; color:var(--txt4); background:none; border:none; cursor:pointer; text-decoration:underline; margin-top:.8rem; padding:0; transition:color .15s; }
+.triage-reset:hover { color:var(--red-dk); }
+
+/* ─── KNOWLEDGE QUIZ ─── */
+.quiz-wrap {
+  background:var(--card); border:1px solid var(--border2);
+  border-radius:var(--r-xl); padding:1.8rem; margin:2rem 0; box-shadow:var(--sh);
+}
+.quiz-header { display:flex; align-items:center; gap:1rem; margin-bottom:1.4rem; flex-wrap:wrap; }
+.quiz-header-text h4 { font-family:var(--ff-d); font-style:italic; font-weight:500; font-size:1.1rem; color:var(--txt); }
+.quiz-header-text p { font-family:var(--ff-b); font-size:.78rem; color:var(--txt3); margin-top:.15rem; }
+.quiz-badge { font-family:var(--ff-m); font-size:.5rem; letter-spacing:.16em; padding:.25rem .75rem; border-radius:20px; border:1px solid var(--border2); color:var(--ac); background:var(--ac-pale); white-space:nowrap; }
+.quiz-progress { display:flex; align-items:center; gap:.8rem; margin-bottom:1.4rem; }
+.quiz-prog-track { flex:1; height:4px; background:rgba(13,122,150,.1); border-radius:2px; overflow:hidden; }
+.quiz-prog-fill { height:100%; background:linear-gradient(to right,var(--ac-dk),var(--ac-lt)); border-radius:2px; transition:width .4s ease; }
+.quiz-prog-text { font-family:var(--ff-m); font-size:.48rem; letter-spacing:.1em; color:var(--txt3); white-space:nowrap; }
+.quiz-q { animation:fadeUp .3s ease both; }
+.quiz-q-num { font-family:var(--ff-m); font-size:.5rem; letter-spacing:.18em; color:var(--txt3); margin-bottom:.5rem; }
+.quiz-q-text { font-family:var(--ff-b); font-weight:600; font-size:.98rem; color:var(--txt); margin-bottom:1rem; line-height:1.5; }
+.quiz-options { display:flex; flex-direction:column; gap:.5rem; }
+.quiz-opt {
+  font-family:var(--ff-b); font-weight:400; font-size:.86rem;
+  padding:.65rem 1rem; border:1px solid var(--border2); border-radius:var(--r);
+  cursor:pointer; text-align:left; background:rgba(255,255,255,.6);
+  color:var(--txt2); transition:all .18s; display:flex; gap:.7rem; align-items:flex-start;
+}
+.quiz-opt:hover:not(:disabled) { background:var(--ac-pale); border-color:var(--ac); color:var(--ac); }
+.quiz-opt:disabled { cursor:default; }
+.quiz-opt.correct { background:rgba(46,125,84,.1); border-color:rgba(46,125,84,.4); color:#2e7d54; font-weight:600; }
+.quiz-opt.wrong   { background:rgba(191,59,46,.08); border-color:rgba(191,59,46,.35); color:var(--red-dk); }
+.quiz-opt.reveal  { background:rgba(46,125,84,.06); border-color:rgba(46,125,84,.2); color:#2e7d54; opacity:.7; }
+.quiz-opt-marker { font-family:var(--ff-m); font-size:.7rem; flex-shrink:0; margin-top:.05rem; }
+.quiz-explain {
+  background:rgba(13,122,150,.06); border:1px solid rgba(13,122,150,.2);
+  border-left:3px solid var(--ac); border-radius:0 var(--r) var(--r) 0;
+  padding:.9rem 1.1rem; margin-top:.8rem;
+  font-family:var(--ff-b); font-size:.82rem; color:var(--txt2); line-height:1.65;
+  animation:fadeUp .3s ease both;
+}
+.quiz-explain strong { color:var(--txt); }
+.quiz-nav { display:flex; justify-content:flex-end; margin-top:1.1rem; }
+.quiz-next {
+  font-family:var(--ff-b); font-weight:700; font-size:.82rem;
+  padding:.5rem 1.4rem; border-radius:20px;
+  background:var(--ac); color:white; border:none; cursor:pointer;
+  transition:background .18s, transform .15s;
+}
+.quiz-next:hover { background:var(--ac-dk); transform:translateX(2px); }
+.quiz-score {
+  text-align:center; padding:1.4rem .5rem;
+  animation:fadeUp .4s ease both;
+}
+.quiz-score-num { font-family:var(--ff-d); font-style:italic; font-size:3.2rem; color:var(--ac); line-height:1; margin-bottom:.4rem; }
+.quiz-score-num.fail { color:var(--red); }
+.quiz-score-label { font-family:var(--ff-b); font-weight:700; font-size:1rem; color:var(--txt); margin-bottom:.4rem; }
+.quiz-score-text { font-family:var(--ff-b); font-size:.85rem; color:var(--txt2); line-height:1.65; max-width:480px; margin:0 auto 1rem; }
+.quiz-retry {
+  font-family:var(--ff-b); font-weight:600; font-size:.82rem;
+  padding:.5rem 1.6rem; border-radius:20px;
+  border:1px solid var(--border2); background:transparent; color:var(--txt2);
+  cursor:pointer; transition:all .18s;
+}
+.quiz-retry:hover { background:var(--ac-pale); border-color:var(--ac); color:var(--ac); }
+
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<!-- ══════════════ RIGHT NAV CARD ══════════════ -->
+<button class="nav-toggle" id="navToggle"
+  onclick="document.getElementById('mainNav').classList.toggle('open')"
+  aria-label="Menu">☰</button>
+
+<nav id="mainNav">
+  <div class="nav-brand">
+    <div class="nav-brand-name">
+      <span class="nav-pulse"></span>Kamino Cell
+    </div>
+    <div class="nav-brand-sub">Radiation Emergency Manual</div>
+  </div>
+
+  <div class="nav-body">
+    <div class="nav-section">
+      <div class="nav-section-hd">
+        <span class="nav-section-num">◈</span>
+        <span class="nav-section-label">Planet</span>
+        <span class="nav-rule"></span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#kamino-stats">Planetary Profile</a></li>
+        <li><a href="#rad-meter">Radiation Meter</a></li>
+      </ul>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-hd">
+        <span class="nav-section-num">I</span>
+        <span class="nav-section-label">The Threat</span>
+        <span class="nav-rule"></span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#sec-threat">Radiation on Kamino</a></li>
+        <li><a href="#sec-dna">DNA &amp; S Phase</a></li>
+        <li><a href="#sec-mitosis">Mitosis &amp; Cancer</a></li>
+        <li><a href="#sec-meiosis">Meiosis &amp; Fertility</a></li>
+      </ul>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-hd">
+        <span class="nav-section-num">II</span>
+        <span class="nav-section-label">Protection</span>
+        <span class="nav-rule"></span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#sec-triad">Three Principles</a></li>
+        <li><a href="#sec-time">Minimising Time</a></li>
+        <li><a href="#sec-distance">Maximising Distance</a></li>
+        <li><a href="#sec-shielding">Shielding Protocols</a></li>
+      </ul>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-hd">
+        <span class="nav-section-num">III</span>
+        <span class="nav-section-label">Safe Ops</span>
+        <span class="nav-rule"></span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#sec-exposure">Exposure Reference</a></li>
+        <li><a href="#sec-safe-ops">Daily Limits</a></li>
+      </ul>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-hd nav-emerg-hd">
+        <span class="nav-section-num">IV</span>
+        <span class="nav-section-label">Emergency</span>
+        <span class="nav-rule"></span>
+      </div>
+      <ul class="nav-links">
+        <li class="nav-emerg-link"><a href="#part-emergency">⚠ Emergency Response</a></li>
+        <li class="nav-emerg-link"><a href="#sec-emergency">Three Imperatives</a></li>
+        <li class="nav-emerg-link"><a href="#sec-post">Post-Exposure</a></li>
+        <li class="nav-emerg-link"><a href="#sec-channels">Channels</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="nav-footer">
+    <div class="nav-footer-text">
+      Kamino Colonial Authority<br>
+      Tipoca Safety Division<br>
+      Mandatory Reading · Rev 8.0
+    </div>
+    <div class="nav-footer-id">Rad–Em–8.0</div>
+  </div>
+</nav>
+
+<!-- ══════════════ HEADER ══════════════ -->
+<header>
+  <div class="header-eyebrow">
+    <span><span class="header-eyebrow-dot"></span> Active Radiation Advisory · Kamino Exoplanet Surface</span>
+  </div>
+  <h1 class="header-title">Radiation <em>Emergency</em><br>Manual</h1>
+  <p class="header-sub">Kamino Cell Command · Sector 7 · Tipoca Spire Compound · 22 BBY</p>
+  <div class="header-divider">
+    <span>◆ Cell Biology &amp; Colonist Survival Guide · Revision 8.0 ◆</span>
+  </div>
+</header>
+
+<div class="wrapper">
+
+<!-- Kamino Stats -->
+<div class="kamino-stats" id="kamino-stats">
+  <div class="stats-glow"></div>
+  <div class="stats-inner">
+    <div class="stats-left">
+      <div class="stats-eyebrow">Planetary Profile · Outer Rim Territories</div>
+      <div class="stats-planet">Kami<span>no</span></div>
+      <div class="stats-class">Extragalactic Ocean World · 5th Planet · Tipoca System</div>
+      <div class="stats-grid">
+        <div class="stat-cell"><div class="stat-label">DIAMETER</div><div class="stat-value ac">19,270 km</div><div class="stat-sub">~1.51× Earth</div></div>
+        <div class="stat-cell"><div class="stat-label">SURFACE</div><div class="stat-value ac">100% Water</div><div class="stat-sub">No landmass</div></div>
+        <div class="stat-cell"><div class="stat-label">ATMOSPHERE</div><div class="stat-value">Type I</div><div class="stat-sub">Breathable</div></div>
+        <div class="stat-cell"><div class="stat-label">WEATHER</div><div class="stat-value warn">Perpetual Storms</div><div class="stat-sub">Electrical activity</div></div>
+        <div class="stat-cell"><div class="stat-label">RADIATION</div><div class="stat-value warn">Elevated</div><div class="stat-sub">62% shield capacity</div></div>
+        <div class="stat-cell"><div class="stat-label">ORBITAL</div><div class="stat-value">5th Planet</div><div class="stat-sub">From host star</div></div>
+      </div>
+    </div>
+    <div class="stats-right">
+      <div class="planet-wrap">
+        <div class="storm-ring"></div><div class="storm-ring"></div><div class="storm-ring"></div>
+        <svg viewBox="0 0 160 160" width="160" height="160" style="position:relative;z-index:1">
+          <defs>
+            <radialGradient id="pg" cx="38%" cy="32%">
+              <stop offset="0%" stop-color="#80d8ea" stop-opacity=".75"/>
+              <stop offset="45%" stop-color="#4ab8cc" stop-opacity=".45"/>
+              <stop offset="100%" stop-color="#1a6080" stop-opacity=".9"/>
+            </radialGradient>
+            <pattern id="sp" x="0" y="0" width="18" height="7" patternUnits="userSpaceOnUse">
+              <path d="M0,3.5 Q4.5,1 9,3.5 Q13.5,6 18,3.5" fill="none" stroke="#267a90" stroke-width=".5" opacity=".5"/>
+            </pattern>
+            <clipPath id="pc"><circle cx="80" cy="80" r="66"/></clipPath>
+          </defs>
+          <circle cx="80" cy="80" r="66" fill="url(#pg)"/>
+          <ellipse cx="80" cy="62" rx="66" ry="9" fill="url(#sp)" opacity=".5" clip-path="url(#pc)"/>
+          <ellipse cx="80" cy="80" rx="66" ry="7" fill="url(#sp)" opacity=".4" clip-path="url(#pc)"/>
+          <ellipse cx="80" cy="98" rx="66" ry="8" fill="url(#sp)" opacity=".3" clip-path="url(#pc)"/>
+          <circle cx="80" cy="80" r="66" fill="none" stroke="#4ab8cc" stroke-width=".8" opacity=".3"/>
+          <ellipse cx="80" cy="80" rx="88" ry="12" fill="none" stroke="#4ab8cc" stroke-width=".6" opacity=".2" transform="rotate(-16 80 80)"/>
+          <ellipse cx="80" cy="80" rx="100" ry="16" fill="none" stroke="#267a90" stroke-width=".4" opacity=".15" transform="rotate(-16 80 80)"/>
+          <circle cx="148" cy="60" r="2.5" fill="#e04b3c" opacity=".8"/>
+          <circle cx="148" cy="60" r="4.5" fill="none" stroke="#e04b3c" stroke-width=".6" opacity=".4"/>
+          <circle cx="22" cy="98" r="2" fill="#4ab8cc" opacity=".7"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Live Meter -->
+<div id="rad-meter">
+  <div class="meter-label">Current Level<span id="meterLevel">Elevated</span></div>
+  <div class="meter-bar-wrap">
+    <div class="meter-track"><div class="meter-fill" id="meterFill"></div></div>
+    <div class="meter-ticks"><span>Safe</span><span>Low</span><span>Elevated</span><span>High</span><span>Critical</span></div>
+  </div>
+  <div class="meter-stats" id="meterStats">4.2 mSv/hr · 0640 hrs local<br>Source: Array Kappa-9</div>
+  <!-- Live Geiger counter visualiser -->
+  <div class="geiger-wrap" style="width:100%;margin-top:0">
+    <div class="geiger-canvas-wrap">
+      <canvas id="geigerCanvas" width="220" height="60" style="display:block;border-radius:8px"></canvas>
+    </div>
+    <div class="geiger-info">
+      <div class="geiger-rate" id="geigerRate">4.2</div>
+      <div class="geiger-unit">mSv / hr  ·  live feed</div>
+      <div class="geiger-controls">
+        <button class="geiger-btn active" onclick="setGeigerZone(1,this)">Zone 1</button>
+        <button class="geiger-btn" onclick="setGeigerZone(2,this)">Zone 2</button>
+        <button class="geiger-btn" onclick="setGeigerZone(3,this)">Zone 3</button>
+        <button class="geiger-btn" onclick="setGeigerZone(4,this)">Zone 4</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ──────────────────── PART I ──────────────────── -->
+<div id="part-threat">
+  <div class="chapter-banner">
+    <div class="chapter-num">I</div>
+    <div class="chapter-meta">
+      <div class="chapter-eyebrow">◈ Part One of Four</div>
+      <div class="chapter-title">Understanding the <em>Threat</em></div>
+      <div class="chapter-desc">What radiation is, where it comes from on Kamino, and how it damages your body at a cellular level.</div>
+    </div>
+  </div>
+
+  <section class="section" id="sec-threat">
+    <div class="section-hd"><div class="sec-num">01</div><div><div class="sec-tag">◈ Context</div><h2 class="sec-title">The Radiation Threat <em>on Kamino</em></h2></div></div>
+    <p class="bp">Kamino is a stormy, ocean-covered world with <strong>no landmass</strong> and a damaged network of orbital shielding satellites. Unlike most settled planets, it faces four simultaneous radiation hazards at all times.</p>
+    <div class="card-grid">
+      <div class="card"><span class="card-icon">🛰️</span><div class="card-num">Hazard · 01</div><div class="card-title">Failing Satellites</div><div class="card-body">Several orbital shielding satellites have failed, leaving gaps in Kamino's protective net. Cosmic rays from deep space now reach the surface without being absorbed.</div></div>
+      <div class="card"><span class="card-icon">⚡</span><div class="card-num">Hazard · 02</div><div class="card-title">Electrical Storms</div><div class="card-body">Non-stop electrical storms scatter existing radiation and direct it into areas that would otherwise be shielded — including deep inside structures.</div></div>
+      <div class="card"><span class="card-icon">🌊</span><div class="card-num">Hazard · 03</div><div class="card-title">Ocean Reflection</div><div class="card-body">The global ocean acts like a mirror. Radiation bouncing off the water reflects back upward — even covered areas can receive radiation from below.</div></div>
+      <div class="card"><span class="card-icon">☢️</span><div class="card-num">Hazard · 04</div><div class="card-title">Three Types of Radiation</div><div class="card-body"><strong>Alpha</strong> — blocked by skin, dangerous if inhaled. <strong>Beta</strong> — penetrates skin, stopped by plastic. <strong>Gamma</strong> — passes through the body, needs lead or thick concrete.</div></div>
+    </div>
+    <div class="graph-wrap" data-label="Diagram — Penetration Power">
+      <div class="graph-title">Radiation Types — How Far Each Travels Through Matter</div>
+      <canvas id="radTypeChart" height="190"></canvas>
+    </div>
+  </section>
+
+  <section class="section" id="sec-dna">
+    <div class="section-hd"><div class="sec-num">02</div><div><div class="sec-tag">◈ Molecular Biology</div><h2 class="sec-title">DNA Damage <em>During S Phase</em></h2></div></div>
+    <p class="bp"><strong>DNA</strong> is the instruction manual inside every cell. Radiation physically breaks and scrambles these instructions. The most dangerous moment is during <em>S phase</em> — when the cell is copying its DNA to prepare for division.</p>
+    <div class="explainer"><p>Think of your DNA as a very long zip. Each tooth is a chemical "letter" in your genetic code. Radiation acts like scissors — it can snip one side (a <strong>single-strand break</strong>) or cut through both sides at once (a <strong>double-strand break</strong>). Double-strand breaks are the most dangerous because they are much harder to repair correctly.</p></div>
+    <div class="diagram-wrap" data-label="Diagram — DNA">
+      <div class="diagram-title">Normal DNA Replication (S Phase) vs. Radiation-Damaged DNA</div>
+      <svg id="dnaSVG" viewBox="0 0 820 270" style="width:100%;height:auto;display:block"></svg>
+    </div>
+    <ul class="rule-list">
+      <li><span class="ri">🧬</span><div class="rt"><strong>DNA is Exposed</strong>During S phase the double helix unzips so it can be copied. This single-stranded DNA is far more vulnerable to radiation damage.</div></li>
+      <li><span class="ri">✏️</span><div class="rt"><strong>Mutations — Copying Errors</strong>Radiation chemically alters DNA "letters." When copied, the wrong replacement is inserted — a permanent mutation passed to every daughter cell.</div></li>
+      <li><span class="ri">🔗</span><div class="rt"><strong>Crosslinks</strong>Radiation can chemically bond the two DNA strands together so they cannot separate, jamming replication completely.</div></li>
+      <li><span class="ri">✂️</span><div class="rt"><strong>Double-Strand Breaks</strong>Both sides of the DNA ladder are cut at once. The cell tries to repair this but can accidentally rearrange or delete entire sections of the genetic code.</div></li>
+    </ul>
+    <div class="graph-wrap" data-label="Graph — Damage Frequency">
+      <div class="graph-title">Types of DNA Damage per 1 Gy of Radiation Dose</div>
+      <canvas id="dnaBarChart" height="190"></canvas>
+    </div>
+  </section>
+
+  <section class="section" id="sec-mitosis">
+    <div class="section-hd"><div class="sec-num">03</div><div><div class="sec-tag">◈ Cell Division</div><h2 class="sec-title">Effects on Mitosis <em>&amp; Cancer Risk</em></h2></div></div>
+    <p class="bp"><strong>Mitosis</strong> is how your body grows and repairs itself — a cell makes an exact copy through four stages: <em>Prophase, Metaphase, Anaphase, Telophase</em> (PMAT). Radiation can disrupt any stage, and when it does, the copy comes out wrong.</p>
+    <div class="explainer"><p>Mitosis is like photocopying a document. Normally you get a perfect duplicate. Radiation is like jamming the copier mid-job — it might skip pages, print errors, or produce a scrambled document. Over many faulty copies, errors accumulate — this is how cancer starts.</p></div>
+    <div class="diagram-wrap" data-label="Interactive — Click a Stage">
+      <div class="diagram-title">Click each stage to see Normal vs. Radiation-Damaged cell behaviour</div>
+      <div class="pmat-grid" id="pmatGrid">
+        <div class="pmat-card active" onclick="selectPMAT(0)"><canvas id="pmat0" width="110" height="100"></canvas><div class="pmat-label">Prophase</div><div class="pmat-sub">Stage P</div></div>
+        <div class="pmat-card" onclick="selectPMAT(1)"><canvas id="pmat1" width="110" height="100"></canvas><div class="pmat-label">Metaphase</div><div class="pmat-sub">Stage M</div></div>
+        <div class="pmat-card" onclick="selectPMAT(2)"><canvas id="pmat2" width="110" height="100"></canvas><div class="pmat-label">Anaphase</div><div class="pmat-sub">Stage A</div></div>
+        <div class="pmat-card" onclick="selectPMAT(3)"><canvas id="pmat3" width="110" height="100"></canvas><div class="pmat-label">Telophase</div><div class="pmat-sub">Stage T</div></div>
+      </div>
+      <div class="pmat-detail show" id="pmatDetail">
+        <div class="pmat-cols">
+          <div class="pmat-n"><div class="pmat-mode-label">✓ Normal Cell</div><div class="pmat-mode-text" id="pmatNormal"></div></div>
+          <div class="pmat-d"><div class="pmat-mode-label">☢ Radiation-Damaged Cell</div><div class="pmat-mode-text" id="pmatDamaged"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="graph-wrap" data-label="Graph — Cancer Risk">
+      <div class="graph-title">Relative Cancer Risk vs. Cumulative Radiation Dose</div>
+      <canvas id="cancerChart" height="210"></canvas>
+    </div>
+  </section>
+
+  <section class="section" id="sec-meiosis">
+    <div class="section-hd"><div class="sec-num">04</div><div><div class="sec-tag">◈ Reproductive Biology</div><h2 class="sec-title">Effects on Meiosis <em>&amp; Fertility</em></h2></div></div>
+    <p class="bp"><strong>Meiosis</strong> produces sex cells (sperm and eggs). Unlike mitosis, it cuts chromosome count in half so that when two gametes combine, the offspring gets the correct total. Radiation can disrupt this — and the effects can be <strong>passed on to children</strong>.</p>
+    <div class="explainer"><p>Your chromosomes are like 46 instruction books. Meiosis carefully sorts them into two piles of 23. Radiation is like knocking the bookshelf over mid-sort — books end up in the wrong pile, some get torn, and some go missing entirely.</p></div>
+    <div class="diagram-wrap" data-label="Diagram — Meiosis">
+      <div class="diagram-title">Normal Meiosis vs. Radiation-Induced Non-Disjunction</div>
+      <svg id="meiosisSVG" viewBox="0 0 820 290" style="width:100%;height:auto;display:block"></svg>
+    </div>
+    <ul class="rule-list">
+      <li><span class="ri">🧬</span><div class="rt"><strong>Non-Disjunction</strong>Radiation prevents chromosomes from separating properly. A gamete ends up with too many or too few chromosomes — <strong>aneuploidy</strong> — causing genetic disorders.</div></li>
+      <li><span class="ri">♻️</span><div class="rt"><strong>Chromosome Rearrangements</strong>Chunks of chromosomes break off and reattach in the wrong place — called <strong>translocations</strong>. These can be inherited by future generations.</div></li>
+      <li><span class="ri">🔻</span><div class="rt"><strong>Reduced Fertility</strong>High doses can destroy developing sperm and egg cells before they mature, potentially causing sterility.</div></li>
+      <li><span class="ri">👶</span><div class="rt"><strong>Heritable Mutations</strong>Unlike body cell mutations, damage in gametes can be passed to children. Radiation-induced changes in a colonist may affect their offspring for generations.</div></li>
+    </ul>
+    <div class="callout"><div class="callout-icon">⚠</div><div class="callout-content"><strong>Pregnant Colonists — Highest Risk</strong>Developing embryos are extremely sensitive because their cells are dividing rapidly. Pregnant personnel must be kept in Zone 0–1 only and report to Medical immediately. Total limit for entire pregnancy: just 1 mSv.</div></div>
+  </section>
+</div>
+
+<div class="divider"><span>◆ Part Two ◆</span></div>
+
+<!-- ──────────────────── PART II ──────────────────── -->
+<div id="part-protection">
+  <div class="chapter-banner">
+    <div class="chapter-num">II</div>
+    <div class="chapter-meta">
+      <div class="chapter-eyebrow">◈ Part Two of Four</div>
+      <div class="chapter-title">Protection <em>Protocols</em></div>
+      <div class="chapter-desc">The three principles that form your defence — Time, Distance, and Shielding — and how to apply them on Kamino.</div>
+    </div>
+  </div>
+
+  <section class="section" id="sec-triad">
+    <div class="section-hd"><div class="sec-num">05</div><div><div class="sec-tag">◈ Core Framework</div><h2 class="sec-title">The Three <em>Principles</em></h2></div></div>
+    <p class="bp">All radiation protection comes down to three principles — the <strong>Triad of Defence</strong>. Apply all three at the same time; they work best together.</p>
+    <div class="card-grid">
+      <div class="card"><span class="card-icon">⏱</span><div class="card-num">Principle · 01</div><div class="card-title">Time</div><div class="card-body">Less time near a source = lower total dose. Radiation accumulates with every second. Minimise how long you spend in any elevated zone.</div></div>
+      <div class="card"><span class="card-icon">↔</span><div class="card-num">Principle · 02</div><div class="card-title">Distance</div><div class="card-body">Double your distance from a source and your exposure drops to one quarter. Even a few extra metres makes a big difference — use them.</div></div>
+      <div class="card"><span class="card-icon">🛡</span><div class="card-num">Principle · 03</div><div class="card-title">Shielding</div><div class="card-body">Dense matter absorbs radiation. Use anti-rad suits, interior walls, and viewport covers. The more material between you and the source, the safer you are.</div></div>
+    </div>
+
+    <!-- Radiation Knowledge Check -->
+    <div class="quiz-wrap" id="radQuiz">
+      <div class="quiz-title">Knowledge Check</div>
+      <div class="quiz-subtitle">◈ Test your understanding of the Three Principles</div>
+      <div id="quizQuestion" class="quiz-q"></div>
+      <div id="quizOptions" class="quiz-opts"></div>
+      <div id="quizResult" class="quiz-result"></div>
+      <div class="quiz-nav">
+        <div class="quiz-progress" id="quizProgress">Question 1 of 5</div>
+        <button class="quiz-btn" id="quizNext" onclick="nextQuestion()">Next →</button>
+      </div>
+      <div class="quiz-score" id="quizScore"></div>
+    </div>
+  </section>
+
+  <section class="section" id="sec-time">
+    <div class="section-hd"><div class="sec-num">06</div><div><div class="sec-tag">◈ Triad — Principle One</div><h2 class="sec-title">Minimising <em>Time</em></h2></div></div>
+    <p class="bp">Every second near a radiation source adds to your total dose. Think of it like standing in sunlight — the longer you stay, the worse the burn — except radiation goes far deeper than skin, reaching your DNA.</p>
+    <ul class="rule-list">
+      <li><span class="ri">⏳</span><div class="rt"><strong>Rotate Shifts</strong>Swap with another person every 15 minutes in elevated zones. Spread the dose across the team — no one person should carry all the exposure.</div></li>
+      <li><span class="ri">📋</span><div class="rt"><strong>Plan First, Then Go In</strong>Practise any task in a safe area before entering a radiation zone. The more confident you are, the faster you finish — less time means less dose.</div></li>
+      <li><span class="ri">⚡</span><div class="rt"><strong>No Standing Around</strong>Do not hold conversations or stand still within 50 metres of reactors, storm arrays, or cracked hull panels. Move with purpose and get out.</div></li>
+      <li><span class="ri">📟</span><div class="rt"><strong>Watch Your Dosimeter</strong>When your reading hits <strong>20 mSv</strong> for the shift, stop work immediately and go to Medical. That limit protects your DNA repair systems from being overwhelmed.</div></li>
+      <li><span class="ri">🌙</span><div class="rt"><strong>Night Cycle Ban</strong>Cosmic ray penetration is highest between 2200 and 0400. Outdoor tasks are banned during this window unless authorised by Sector Command.</div></li>
+    </ul>
+  </section>
+
+  <section class="section" id="sec-distance">
+    <div class="section-hd"><div class="sec-num">07</div><div><div class="sec-tag">◈ Triad — Principle Two</div><h2 class="sec-title">Maximising <em>Distance</em></h2></div></div>
+    <p class="bp">The <strong>inverse square law</strong> means radiation drops off very quickly as you move away. Small increases in distance give large reductions in exposure — distance is the cheapest protection available.</p>
+    <div class="graph-wrap" data-label="Graph — Inverse Square Law">
+      <div class="graph-title">Distance from Source vs. Radiation Intensity</div>
+      <canvas id="inverseChart" height="230"></canvas>
+    </div>
+
+    <!-- Interactive Distance Slider -->
+    <div class="dist-slider-wrap">
+      <h4>Try it: drag to find your safe distance</h4>
+      <p>Move the slider to see how radiation intensity drops as you increase your distance from a point source. The reference dose rate is set to Zone 3 (10 mSv/hr at 1 m).</p>
+      <input type="range" class="dist-slider" id="distSlider" min="1" max="200" value="5" step="1"
+        oninput="updateDistSlider(this.value)">
+      <div class="dist-ticks">
+        <span>1 m</span><span>25 m</span><span>50 m</span><span>100 m</span><span>200 m</span>
+      </div>
+      <div class="dist-readout">
+        <div class="dist-stat">
+          <div class="dist-stat-val" id="distVal">5 m</div>
+          <div class="dist-stat-label">Your Distance</div>
+        </div>
+        <div class="dist-stat">
+          <div class="dist-stat-val" id="distDose">0.40</div>
+          <div class="dist-stat-label">mSv/hr</div>
+        </div>
+        <div class="dist-stat">
+          <div class="dist-stat-val" id="distReduction">96%</div>
+          <div class="dist-stat-label">Dose Reduction</div>
+        </div>
+        <div class="dist-bar-wrap">
+          <div class="dist-bar-label" id="distBarLabel">Relative exposure</div>
+          <div class="dist-bar-track">
+            <div class="dist-bar-fill" id="distBar" style="width:4%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="explainer"><p>Imagine turning on a torch in a dark room. Up close, it blinds you. Walk to the other side and it barely lights your face. Radiation follows the same rule — every metre you put between yourself and the source works in your favour.</p></div>
+    <ul class="rule-list">
+      <li><span class="ri">📐</span><div class="rt"><strong>Minimum 100 Metres</strong>Stay at least 100 metres from any identified point source unless wearing full Class-IV anti-rad gear. This is a hard minimum, not a suggestion.</div></li>
+      <li><span class="ri">🗺</span><div class="rt"><strong>Check Zone Maps</strong>Look at the live Radiation Zone Map on any Command Terminal before moving around Tipoca Spire. Never walk into a Red Zone without written clearance from Sector Command.</div></li>
+      <li><span class="ri">🚷</span><div class="rt"><strong>Use Evacuation Corridors</strong>In an emergency, follow amber-striped corridors. These routes are planned to keep you as far as possible from radiation sources.</div></li>
+    </ul>
+  </section>
+
+  <section class="section" id="sec-shielding">
+    <div class="section-hd"><div class="sec-num">08</div><div><div class="sec-tag">◈ Triad — Principle Three</div><h2 class="sec-title">Shielding <em>Protocols</em></h2></div></div>
+    <p class="bp">When time and distance are not enough, shielding is your last line of defence. The denser the material between you and the source, the more radiation it absorbs before reaching you.</p>
+    <div class="card-grid">
+      <div class="card"><span class="card-icon">🪖</span><div class="card-num">Shield · 01</div><div class="card-title">Anti-Rad Suits</div><div class="card-body">Class-IV suits with lead-composite weave block most beta and gamma radiation. Mandatory in Zone 3+. Check the seal before every use — a small gap defeats the protection.</div></div>
+      <div class="card"><span class="card-icon">🧱</span><div class="card-num">Shield · 02</div><div class="card-title">Interior Walls</div><div class="card-body">Tipoca Spire's 30cm durasteel walls equal 5cm of lead in protection. Prefer inner rooms over outer corridors during any advisory above Level 2.</div></div>
+      <div class="card"><span class="card-icon">🪟</span><div class="card-num">Shield · 03</div><div class="card-title">Viewport Covers</div><div class="card-body">Transparisteel windows do NOT block radiation. Deploy metal covers during any storm or elevated advisory. An uncovered window is a hole in your shield.</div></div>
+      <div class="card"><span class="card-icon">💊</span><div class="card-num">Shield · 04</div><div class="card-title">Rad-Block Tablets</div><div class="card-body">Potassium iodide compound tablets protect your thyroid from absorbing radioactive particles. A secondary backup — not a replacement for physical shielding.</div></div>
+    </div>
+
+    <!-- Shielding Calculator -->
+    <div class="shield-calc">
+      <h4>Shielding Effectiveness Calculator</h4>
+      <p>Select a material and thickness to see how much gamma radiation it blocks. Uses standard half-value layer (HVL) physics.</p>
+      <div class="shield-inputs">
+        <div class="shield-field">
+          <label for="shieldMat">Material</label>
+          <select class="dose-select" id="shieldMat" onchange="calcShield()">
+            <option value="13.5">Lead (HVL 0.74 cm)</option>
+            <option value="10">Durasteel / Steel (HVL 1.0 cm)</option>
+            <option value="5.5" selected>Concrete (HVL 5.5 cm)</option>
+            <option value="3.3">Water (HVL 9.0 cm)</option>
+            <option value="1.4">Standard plastoid armour (HVL 17 cm)</option>
+            <option value="0.2">Transparisteel / Glass (HVL 90 cm)</option>
+          </select>
+        </div>
+        <div class="shield-field">
+          <label for="shieldThick">Thickness (cm)</label>
+          <input type="range" class="dist-slider" id="shieldThick" min="0" max="60" value="15" step="1"
+            oninput="calcShield()" style="margin-top:.4rem">
+          <span id="shieldThickVal" style="font-family:var(--ff-m);font-size:.72rem;color:var(--txt3)">15 cm</span>
+        </div>
+      </div>
+      <div class="shield-vis">
+        <div class="shield-bar-col">
+          <div class="shield-bar-label">Incoming radiation</div>
+          <div class="shield-bar-track">
+            <div class="shield-bar-fill" id="shieldBarIn" style="height:100%;background:linear-gradient(to top,var(--red-dk),var(--red-lt))"></div>
+          </div>
+          <div class="shield-bar-val" style="color:var(--red)">100%</div>
+        </div>
+        <div class="shield-arrow">→</div>
+        <div class="shield-bar-col">
+          <div class="shield-bar-label">Through material</div>
+          <div class="shield-bar-track">
+            <div class="shield-bar-fill" id="shieldBarOut" style="height:70%;background:linear-gradient(to top,var(--ac-dk),var(--ac-lt))"></div>
+          </div>
+          <div class="shield-bar-val" id="shieldOutPct" style="color:var(--ac)">—</div>
+        </div>
+        <div class="shield-bar-col">
+          <div class="shield-bar-label">Absorbed / blocked</div>
+          <div class="shield-bar-track">
+            <div class="shield-bar-fill" id="shieldBarBlocked" style="height:30%;background:linear-gradient(to top,#2e7d54,#52b880)"></div>
+          </div>
+          <div class="shield-bar-val" id="shieldBlockPct" style="color:#2e7d54">—</div>
+        </div>
+      </div>
+      <div class="shield-verdict" id="shieldVerdict">
+        <div class="shield-verdict-icon">🛡️</div>
+        <div id="shieldVerdictText">Calculating...</div>
+      </div>
+    </div>
+    <div class="callout"><div class="callout-icon">🚫</div><div class="callout-content"><strong>Armour ≠ Radiation Protection</strong>Standard clone trooper armour and civilian clothing provide zero radiation shielding. Never assume your uniform will protect you from radiation.</div></div>
+  </section>
+</div>
+
+<div class="divider"><span>◆ Part Three ◆</span></div>
+
+<!-- ──────────────────── PART III ──────────────────── -->
+<div id="part-safe">
+  <div class="chapter-banner">
+    <div class="chapter-num">III</div>
+    <div class="chapter-meta">
+      <div class="chapter-eyebrow">◈ Part Three of Four</div>
+      <div class="chapter-title">Safe Operating <em>Conditions</em></div>
+      <div class="chapter-desc">Approved limits and reference tables for daily operations. Check these before every shift.</div>
+    </div>
+  </div>
+
+  <section class="section" id="sec-exposure">
+    <div class="section-hd"><div class="sec-num">09</div><div><div class="sec-tag">◈ Reference Table</div><h2 class="sec-title">Exposure Level <em>Reference</em></h2></div></div>
+    <p class="bp">Check your dosimeter reading against this table. Know your zone, know your limit, and know what to do.</p>
+    <table class="exposure-table">
+      <thead><tr><th>Zone</th><th>Dose Rate</th><th>Level</th><th>What Happens to Your Body</th><th>Required Action</th></tr></thead>
+      <tbody>
+        <tr><td style="font-family:var(--ff-m);color:var(--txt)">Zone 1</td><td style="font-family:var(--ff-m)">&lt;1 mSv/hr</td><td><span class="badge b-safe">Safe</span></td><td>No noticeable effect at normal shift lengths</td><td>Normal operations. Routine monitoring.</td></tr>
+        <tr><td style="font-family:var(--ff-m);color:var(--txt)">Zone 2</td><td style="font-family:var(--ff-m)">1–5 mSv/hr</td><td><span class="badge b-low">Low</span></td><td>Minor DNA strand stress; cells can still repair the damage</td><td>Max 4hr shifts. Dosimeter required.</td></tr>
+        <tr><td style="font-family:var(--ff-m);color:var(--txt)">Zone 3</td><td style="font-family:var(--ff-m)">5–20 mSv/hr</td><td><span class="badge b-elev">Elevated</span></td><td>Higher cancer risk; DNA repair systems under strain</td><td>Full anti-rad suit. Max 1hr. RSO escort required.</td></tr>
+        <tr><td style="font-family:var(--ff-m);color:var(--txt)">Zone 4</td><td style="font-family:var(--ff-m)">20–100 mSv/hr</td><td><span class="badge b-high">High</span></td><td>Acute radiation sickness: nausea, fatigue, vomiting</td><td>Emergency entry only. 15 min max. Medical standby.</td></tr>
+        <tr><td style="font-family:var(--ff-m);color:var(--txt)">Zone 5</td><td style="font-family:var(--ff-m)">&gt;100 mSv/hr</td><td><span class="badge b-crit">Critical</span></td><td>Immediate organ damage; potentially lethal within hours</td><td>EVACUATE. No entry. Alert Sector Command now.</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Dose Calculator -->
+    <div class="dose-calc" id="doseCalc">
+      <h4>Shift Dose Calculator</h4>
+      <p>Enter your current zone and how long you plan to work there. The calculator will estimate your total dose and advise whether it's within safe limits.</p>
+      <div class="dose-inputs">
+        <div class="dose-field">
+          <label for="calcZone">Zone</label>
+          <select class="dose-select" id="calcZone" onchange="calcDose()">
+            <option value="0.5">Zone 1 — Safe (&lt;1 mSv/hr)</option>
+            <option value="3" selected>Zone 2 — Low (avg 3 mSv/hr)</option>
+            <option value="12">Zone 3 — Elevated (avg 12 mSv/hr)</option>
+            <option value="60">Zone 4 — High (avg 60 mSv/hr)</option>
+            <option value="150">Zone 5 — Critical (150 mSv/hr)</option>
+          </select>
+        </div>
+        <div class="dose-field">
+          <label for="calcTime">Time in zone (minutes)</label>
+          <input type="number" class="dose-input" id="calcTime" value="30" min="1" max="480"
+            oninput="calcDose()" onchange="calcDose()">
+        </div>
+      </div>
+      <div class="dose-result" id="doseResult">
+        <div class="dose-number" id="doseNum">1.5</div>
+        <div class="dose-text">
+          <div class="dose-status" id="doseStatus">Within daily limit</div>
+          <div class="dose-advice" id="doseAdvice">Estimated dose is 1.5 mSv — well within the 20 mSv shift limit. Monitor your dosimeter regularly.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="sec-safe-ops">
+    <div class="section-hd"><div class="sec-num">10</div><div><div class="sec-tag">◈ Daily Limits</div><h2 class="sec-title">Safe Operating <em>Conditions</em></h2></div></div>
+    <p class="bp">These are the approved limits for normal daily operations. Operating outside these requires written clearance from Sector Command.</p>
+    <div class="safe-grid">
+      <div class="safe-card"><div class="safe-card-icon">📊</div><div class="safe-card-label">Max Shift Dose</div><div class="safe-card-val">20 mSv</div><div class="safe-card-body">Per working shift. Exceeded? Stop and report to Medical.</div></div>
+      <div class="safe-card"><div class="safe-card-icon">📅</div><div class="safe-card-label">Annual Limit</div><div class="safe-card-val">50 mSv</div><div class="safe-card-body">For operational staff. Civilians: 1 mSv per year.</div></div>
+      <div class="safe-card"><div class="safe-card-icon">🌡️</div><div class="safe-card-label">Unshielded Zone Max</div><div class="safe-card-val">Zone 2</div><div class="safe-card-body">Without approved anti-rad gear, Zone 1–2 only.</div></div>
+      <div class="safe-card"><div class="safe-card-icon">⏰</div><div class="safe-card-label">Outdoor Window</div><div class="safe-card-val">0400–2200</div><div class="safe-card-body">Outdoor activity only during this window.</div></div>
+      <div class="safe-card"><div class="safe-card-icon">🤰</div><div class="safe-card-label">Pregnancy Limit</div><div class="safe-card-val">1 mSv</div><div class="safe-card-body">Total for entire pregnancy. Zone 0–1 only.</div></div>
+      <div class="safe-card"><div class="safe-card-icon">👦</div><div class="safe-card-label">Cadets / Under-18</div><div class="safe-card-val">Zone 1 Only</div><div class="safe-card-body">Restricted to the safest zones at all times.</div></div>
+    </div>
+
+    <!-- Shift Rotation Timer -->
+    <div class="shift-timer" id="shiftTimer">
+      <svg class="timer-ring" viewBox="0 0 80 80">
+        <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(13,122,150,0.1)" stroke-width="5"/>
+        <circle id="timerRingFill" cx="40" cy="40" r="34" fill="none"
+          stroke="var(--ac)" stroke-width="5"
+          stroke-dasharray="213.6" stroke-dashoffset="0"
+          stroke-linecap="round"
+          transform="rotate(-90 40 40)"
+          style="transition:stroke-dashoffset 0.5s linear, stroke 0.3s"/>
+        <text id="timerSvgText" x="40" y="45" text-anchor="middle"
+          font-family="DM Mono,monospace" font-size="13" fill="var(--ac)" font-weight="500">15:00</text>
+      </svg>
+      <div class="timer-body">
+        <h4>Shift Rotation Timer</h4>
+        <p>In elevated zones, swap with another person every 15 minutes to spread the radiation dose across the team. Use this timer to track your shift.</p>
+        <div class="timer-btns">
+          <button class="timer-btn primary" id="timerStart" onclick="timerToggle()">Start</button>
+          <button class="timer-btn" onclick="timerReset()">Reset</button>
+          <button class="timer-btn danger" onclick="timerSetCustom()">Set Duration</button>
+        </div>
+      </div>
+    </div>
+    <ul class="rule-list" style="margin-top:1rem">
+      <li><span class="ri">✅</span><div class="rt"><strong>Dosimeter Active</strong>Must be active and checked before starting your shift. An unexpected overnight reading must be reported to your RSO before any work begins.</div></li>
+      <li><span class="ri">✅</span><div class="rt"><strong>Zone Map Reviewed</strong>Check the current Radiation Zone Map before leaving your quarters. Zones can change overnight from equipment failures or storm damage.</div></li>
+      <li><span class="ri">✅</span><div class="rt"><strong>Suit Inspected (Zone 2+)</strong>Your anti-rad suit must be inspected and signed off by an RSO. Any suit showing wear, tears, or failed seals must be replaced before use.</div></li>
+      <li><span class="ri">✅</span><div class="rt"><strong>Comm Tuned to Kappa-7</strong>Your communicator must be set to the emergency broadcast channel before starting any shift.</div></li>
+      <li><span class="ri">✅</span><div class="rt"><strong>Buddy System</strong>No colonist works alone in Zone 2 or above. All elevated-zone tasks require at least two people at all times.</div></li>
+    </ul>
+  </section>
+</div>
+
+<div class="divider" style="--border:rgba(191,59,46,0.25)"><span style="color:rgba(191,59,46,0.5)">◆ Part Four — Emergency ◆</span></div>
+
+<!-- ──────────────────── PART IV ──────────────────── -->
+<div id="part-emergency" class="zone-emerg">
+  <div class="chapter-banner">
+    <div class="chapter-num">IV</div>
+    <div class="chapter-meta">
+      <div class="chapter-eyebrow" style="color:rgba(191,59,46,0.6)">◈ Part Four of Four — Critical Protocols</div>
+      <div class="chapter-title">Emergency <em>Response</em></div>
+      <div class="chapter-desc" style="color:rgba(191,59,46,0.55)">Follow these instructions immediately if a radiation event occurs. Every second matters.</div>
+    </div>
+  </div>
+
+  <div class="extreme-alert">
+    <div class="alert-ticker">
+      <span class="alert-ticker-inner">⚠ Extreme Radiation Alert — Follow Protocol Immediately &nbsp;◆&nbsp; Get Inside → Stay Inside → Stay Tuned &nbsp;◆&nbsp; Do Not Leave Shelter Without Official All-Clear From Sector Command &nbsp;◆&nbsp; Tune Communicator to Channel Kappa-7 Now &nbsp;◆&nbsp; Remove Contaminated Clothing Immediately &nbsp;◆&nbsp; ⚠ Extreme Radiation Alert — Follow Protocol Immediately &nbsp;◆&nbsp; Get Inside → Stay Inside → Stay Tuned &nbsp;◆&nbsp; Do Not Leave Shelter Without Official All-Clear From Sector Command &nbsp;◆&nbsp; Tune Communicator to Channel Kappa-7 Now &nbsp;◆&nbsp; Remove Contaminated Clothing Immediately &nbsp;◆&nbsp;</span>
+    </div>
+    <div class="alert-inner">
+      <div class="alert-symbol">☢</div>
+      <div class="alert-content">
+        <div class="alert-status">Extreme Radiation Alert — Protocol Active</div>
+        <div class="alert-headline">Follow the <em>Three Imperatives</em><br>in Order — Right Now</div>
+        <div class="alert-body">A radiation event has been detected or is imminent. <strong>Stop what you are doing.</strong> Do not collect belongings, do not wait for others. Your only priority is following the three steps below in order. These protocols are designed to reduce your radiation dose as quickly as possible and keep you alive.</div>
+        <div class="alert-chips">
+          <div class="alert-chip"><span class="chip-num">1</span> Get Inside</div>
+          <div class="alert-chip"><span class="chip-num">2</span> Stay Inside</div>
+          <div class="alert-chip"><span class="chip-num">3</span> Stay Tuned</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="section" id="sec-emergency">
+    <div class="section-hd" style="border-bottom-color:rgba(191,59,46,0.2)"><div class="sec-num">11</div><div><div class="sec-tag" style="color:rgba(191,59,46,0.55)">◈ Primary Response</div><h2 class="sec-title">The Three <em>Imperatives</em></h2></div></div>
+    <p class="bp">In any radiation emergency, follow these three steps in order. Do not skip steps. Do not change the order. Do not improvise.</p>
+    <div class="e-steps">
+      <div class="e-step">
+        <div class="e-step-side"><div class="e-step-num">1</div></div>
+        <div class="e-step-body">
+          <div class="e-step-title">Get <em>Inside</em></div>
+          <div class="e-step-text">Move immediately to the nearest designated <strong>Radiation Shelter</strong>. On Kamino, these are marked by pulsing amber circles on corridor displays. Head for the lowest level you can reach — sub-level interior rooms with thick durasteel walls provide the most protection. Every second you spend outside continues to add to your dose.</div>
+          <ul class="e-checklist" id="cl1" onclick="toggleCheck(event,'1')">
+
+            <li>Head to the nearest shelter marker — amber circle on corridor displays</li>
+            <li>Descend to the lowest available level inside the structure</li>
+            <li>Choose interior rooms — the more walls between you and outside, the better</li>
+            <li>Do not stop to collect belongings, food, or equipment</li>
+            <li>Warn anyone you pass — but do not slow down to wait for them</li>
+          
+          </ul>
+          <div class="e-step-progress">
+            <div class="e-step-progress-bar"><div class="e-step-progress-fill" id="clbar1"></div></div>
+            <span class="e-step-progress-text" id="clpct1">0 / </span>
+            <button class="e-reset-btn" onclick="resetChecklist(event,'1')">Reset</button>
+          </div>
+          <div class="e-tags"><span class="e-tag">Move Fast</span><span class="e-tag">Go Low</span><span class="e-tag">Inner Rooms</span><span class="e-tag">Don't Wait</span></div>
+        </div>
+      </div>
+      <div class="e-step">
+        <div class="e-step-side"><div class="e-step-num">2</div></div>
+        <div class="e-step-body">
+          <div class="e-step-title">Stay <em>Inside</em></div>
+          <div class="e-step-text">Once in the shelter, your goal is to <strong>reduce any further exposure to zero</strong>. Seal the room, remove contaminated clothing, and do not leave until officially told to do so. Remaining inside a shielded structure dramatically lowers your dose, even if the event continues for hours.</div>
+          <ul class="e-checklist" id="cl2" onclick="toggleCheck(event,'2')">
+
+            <li>Seal all door panels — use the red lever or keypad on interior shelter doors</li>
+            <li>Deploy metal blast covers over all windows and viewport panels immediately</li>
+            <li>Remove all clothing worn during exposure — seal it in a bag, place as far away as possible</li>
+            <li>If a shower is available, use it immediately — water removes up to 80% of external contamination</li>
+            <li>Stay away from exterior walls and windows even after covering them</li>
+            <li>Do not open doors until you hear the official all-clear on Kappa-7</li>
+          
+          </ul>
+          <div class="e-step-progress">
+            <div class="e-step-progress-bar"><div class="e-step-progress-fill" id="clbar2"></div></div>
+            <span class="e-step-progress-text" id="clpct2">0 / </span>
+            <button class="e-reset-btn" onclick="resetChecklist(event,'2')">Reset</button>
+          </div>
+          <div class="e-tags"><span class="e-tag">Seal Doors</span><span class="e-tag">Cover Windows</span><span class="e-tag">Remove Clothing</span><span class="e-tag">Shower</span></div>
+        </div>
+      </div>
+      <div class="e-step">
+        <div class="e-step-side"><div class="e-step-num">3</div></div>
+        <div class="e-step-body">
+          <div class="e-step-title">Stay <em>Tuned</em></div>
+          <div class="e-step-text">Tune your communicator to <strong>Emergency Broadcast Channel Kappa-7</strong> immediately. All shelters in Tipoca Spire have hardwired receivers for this channel. Listen for official instructions from Sector Command — they will tell you when it is safe to move, where medical triage points are, and what decontamination steps to take.</div>
+          <ul class="e-checklist" id="cl3" onclick="toggleCheck(event,'3')">
+
+            <li>Tune communicator to <strong>Kappa-7</strong> — the only official emergency broadcast channel</li>
+            <li>Listen for the official all-clear before taking any action — do not assume the event is over</li>
+            <li>Record your dosimeter reading and log the time of exposure as soon as sheltered</li>
+            <li>Do not spread rumours or act on unofficial information from other colonists</li>
+            <li>Keep calm and conserve your air supply if the shelter is fully sealed</li>
+          
+          </ul>
+          <div class="e-step-progress">
+            <div class="e-step-progress-bar"><div class="e-step-progress-fill" id="clbar3"></div></div>
+            <span class="e-step-progress-text" id="clpct3">0 / </span>
+            <button class="e-reset-btn" onclick="resetChecklist(event,'3')">Reset</button>
+          </div>
+          <div class="e-tags"><span class="e-tag">Kappa-7</span><span class="e-tag">Await All-Clear</span><span class="e-tag">Log Dose</span><span class="e-tag">No Rumours</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="sec-post">
+    <div class="section-hd" style="border-bottom-color:rgba(191,59,46,0.2)"><div class="sec-num">12</div><div><div class="sec-tag" style="color:rgba(191,59,46,0.55)">◈ After the Event</div><h2 class="sec-title">Post-Exposure <em>Response</em></h2></div></div>
+    <p class="bp">Once Sector Command issues the all-clear, the emergency is not over for your body. Some effects appear hours or days later. Carry out these steps after every exposure event, however minor.</p>
+    <div class="post-grid">
+      <div class="post-card"><div class="post-card-icon">🏥</div><div class="post-card-title">Report to Medical</div><div class="post-card-body">Full dosimetry assessment — even if you feel fine. Radiation sickness symptoms can be delayed by <strong>hours or days</strong>.</div></div>
+      <div class="post-card"><div class="post-card-icon">📋</div><div class="post-card-title">File an Incident Report</div><div class="post-card-body">Report the event, your location, and estimated exposure duration to your RSO before leaving the shelter.</div></div>
+      <div class="post-card"><div class="post-card-icon">🚿</div><div class="post-card-title">Full Decontamination</div><div class="post-card-body">Full decontamination shower at the Medical Bay. A certified officer will check for residual surface contamination using a Geiger probe.</div></div>
+      <div class="post-card"><div class="post-card-icon">🛑</div><div class="post-card-title">Duty Stand-Down</div><div class="post-card-body">Any colonist who received above 20 mSv is placed on <strong>mandatory duty stand-down</strong> until cleared by Medical Command.</div></div>
+      <div class="post-card"><div class="post-card-icon">👁️</div><div class="post-card-title">Self-Monitor 72 Hrs</div><div class="post-card-body">Watch yourself and those around you for symptoms for at least 72 hours. Report any new symptoms immediately via KMC-1.</div></div>
+      <div class="post-card"><div class="post-card-icon">🧴</div><div class="post-card-title">Rad-Block Follow-Up</div><div class="post-card-body">Medical officers may prescribe a follow-up course of Rad-Block tablets. Take the full course — do not stop early.</div></div>
+    </div>
+    <div class="triage-wrap">
+      <h4>Symptom Triage — Select what you're experiencing</h4>
+      <p>Tap every symptom you are currently feeling. The checker will assess your likely severity level and tell you what to do. For use during the 72 hours following any radiation exposure.</p>
+      <div class="triage-chips" id="triageChips">
+        <span class="tchip" data-sev="1" onclick="triageTap(this)">🤢 Nausea</span>
+        <span class="tchip" data-sev="2" onclick="triageTap(this)">🤮 Vomiting (mild)</span>
+        <span class="tchip" data-sev="4" onclick="triageTap(this)">🤮 Vomiting within 30 min of exposure</span>
+        <span class="tchip" data-sev="1" onclick="triageTap(this)">😵 Dizziness</span>
+        <span class="tchip" data-sev="1" onclick="triageTap(this)">😓 Extreme Fatigue</span>
+        <span class="tchip" data-sev="1" onclick="triageTap(this)">🔴 Skin Reddening</span>
+        <span class="tchip" data-sev="3" onclick="triageTap(this)">🔥 Skin Blistering</span>
+        <span class="tchip" data-sev="3" onclick="triageTap(this)">💧 Hair Loss</span>
+        <span class="tchip" data-sev="3" onclick="triageTap(this)">🩹 Unexplained Bruising</span>
+        <span class="tchip" data-sev="3" onclick="triageTap(this)">😵‍💫 Confusion / Disorientation</span>
+        <span class="tchip" data-sev="4" onclick="triageTap(this)">🩸 Bleeding Gums or Nose</span>
+        <span class="tchip" data-sev="4" onclick="triageTap(this)">🫀 Rapid / irregular heartbeat</span>
+        <span class="tchip" data-sev="2" onclick="triageTap(this)">💤 Cannot stay awake</span>
+        <span class="tchip" data-sev="2" onclick="triageTap(this)">🤒 Fever above 38°C</span>
+      </div>
+      <div class="triage-result none" id="triageResult">
+        <div class="triage-sev-icon">✅</div>
+        <div>
+          <div class="triage-sev-title" id="triageSevTitle">No symptoms selected</div>
+          <div class="triage-sev-text" id="triageSevText">Select any symptoms you are experiencing above. The triage checker will update instantly.</div>
+        </div>
+      </div>
+      <button class="triage-reset" onclick="triageReset()">Clear all selections</button>
+    </div>
+    <div class="callout" style="border-left-color:var(--red);margin-top:1.1rem">
+      <div class="callout-icon">⚠</div>
+      <div class="callout-content">
+        <strong style="color:var(--red)">Early Vomiting = Severe Exposure</strong>
+        Vomiting within 30 minutes of exposure is a sign of a very high dose. This is a medical emergency. Call KMC-1 immediately via communicator — medical personnel can reach the shelter. Do not wait for the all-clear.
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="sec-channels">
+    <div class="section-hd" style="border-bottom-color:rgba(191,59,46,0.2)"><div class="sec-num">13</div><div><div class="sec-tag" style="color:rgba(191,59,46,0.55)">◈ Communications</div><h2 class="sec-title">Emergency <em>Channels</em></h2></div></div>
+    <p class="bp">All channels operate on the emergency subspace band and function during atmospheric interference. Save these before your next shift.</p>
+    <div class="channels-grid" id="channelGrid">
+      <div class="channel-card" onclick="openChannel('KAPPA-7')" data-ch="KAPPA-7">
+        <div class="ch-label">Emergency Broadcast</div>
+        <div class="ch-id">KAPPA-7</div>
+        <div class="ch-desc">Official all-clear, evacuation routes, and decontamination instructions. <strong>Monitor this first.</strong></div>
+        <div class="ch-tune"><span>Tune in</span></div>
+      </div>
+      <div class="channel-card" onclick="openChannel('KAPPA-0')" data-ch="KAPPA-0">
+        <div class="ch-label">Emergency Ops — Tipoca</div>
+        <div class="ch-id">KAPPA-0</div>
+        <div class="ch-desc">Main emergency operations hub. Report zone escalations and missing personnel here.</div>
+        <div class="ch-tune"><span>Tune in</span></div>
+      </div>
+      <div class="channel-card" onclick="openChannel('KMC-1')" data-ch="KMC-1">
+        <div class="ch-label">Sector Medical Command</div>
+        <div class="ch-id">KMC-1</div>
+        <div class="ch-desc">For medical emergencies, early-onset symptoms, and requests for medical personnel.</div>
+        <div class="ch-tune"><span>Tune in</span></div>
+      </div>
+      <div class="channel-card" onclick="openChannel('RSO-4')" data-ch="RSO-4">
+        <div class="ch-label">Radiation Safety Officer</div>
+        <div class="ch-id">RSO-4</div>
+        <div class="ch-desc">For dosimetry queries, zone escalation reports, and shielding equipment failures.</div>
+        <div class="ch-tune"><span>Tune in</span></div>
+      </div>
+      <div class="channel-card" onclick="openChannel('CR-12')" data-ch="CR-12">
+        <div class="ch-label">Medical Rapid Response</div>
+        <div class="ch-id">CR-12</div>
+        <div class="ch-desc">Clone Force rapid medical team. Dispatched for critical injuries or confirmed acute radiation syndrome.</div>
+        <div class="ch-tune"><span>Tune in</span></div>
+      </div>
+      <div class="channel-card" onclick="openChannel('ENG-3')" data-ch="ENG-3">
+        <div class="ch-label">Engineering — Hull Breach</div>
+        <div class="ch-id">ENG-3</div>
+        <div class="ch-desc">Report structural failures, cracked hull panels, or viewport seal failures allowing radiation ingress.</div>
+        <div class="ch-tune"><span>Tune in</span></div>
+      </div>
+    </div>
+
+    <!-- Transmission preview panel -->
+    <div class="tx-panel" id="txPanel">
+      <div class="tx-header">
+        <div class="tx-signal">
+          <div class="tx-bar"></div><div class="tx-bar"></div>
+          <div class="tx-bar"></div><div class="tx-bar"></div>
+          <div class="tx-bar"></div>
+        </div>
+        <div class="tx-meta">
+          <div class="tx-channel-id" id="txChannelId">KAPPA-7</div>
+          <div class="tx-channel-name" id="txChannelName">Emergency Broadcast</div>
+        </div>
+        <div class="tx-timestamp" id="txTimestamp">0640 HRS LOCAL</div>
+        <button class="tx-close" onclick="closeChannel()">✕</button>
+      </div>
+      <div class="tx-body">
+        <div class="tx-from" id="txFrom">TRANSMISSION FROM: SECTOR COMMAND · TIPOCA SPIRE</div>
+        <div class="tx-message" id="txMessage"></div>
+      </div>
+      <div class="tx-footer">
+        <div class="tx-status" id="txStatus">SIGNAL LOCKED · SUBSPACE BAND CLEAR</div>
+        <div class="tx-freq" id="txFreq">FREQ: 47.822 MHz</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+
+<div class="divider"><span>◆ Knowledge Check ◆</span></div>
+
+<div class="wrapper" style="padding-bottom:0">
+  <div class="quiz-wrap" id="quizWrap">
+    <div class="quiz-header">
+      <div class="quiz-header-text">
+        <h4>Pre-Shift Readiness Quiz</h4>
+        <p>Test your knowledge of the manual before your next shift. 8 questions covering all four parts.</p>
+      </div>
+      <span class="quiz-badge">◈ 8 Questions</span>
+    </div>
+    <div class="quiz-progress">
+      <div class="quiz-prog-track"><div class="quiz-prog-fill" id="quizProgFill" style="width:0%"></div></div>
+      <span class="quiz-prog-text" id="quizProgText">0 of 8</span>
+    </div>
+    <div id="quizBody"></div>
+  </div>
+</div>
+
+<div class="divider"><span>◆ End of Manual ◆</span></div>
+
+</div><!-- /wrapper -->
+
+<footer>
+  <div class="footer-logo">Kamino Cell</div>
+  <div class="footer-meta">
+    Radiation Emergency Manual — Revision 8.0<br>
+    Issued by: Kaminoan Bioscience Authority · Tipoca Colonial Safety Division<br>
+    Authorised by: Sector Command · Standard Year 22 BBY<br>
+    ◈ Mandatory reading for all Kamino Cell personnel ◈
+  </div>
+</footer>
+
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- Bottom brochure banner -->
+<div class="brochure-banner">
+  <div class="bb-icon">📋</div>
+  <div class="bb-text">
+    <div class="bb-title">No site or communicator access?</div>
+    <div class="bb-body">Refer to your printed onboarding brochure — it contains the full emergency protocol and all channel codes.</div>
+  </div>
+  <div class="bb-pill">Keep Brochure On Person</div>
+</div>
+
+<script>
+'use strict';
+// ── Colour tokens for canvas ──────────────────────────────────────────────────
+const AC   = '#0d7a96';
+const ACDK = '#085c72';
+const ACLT = '#29aece';
+const BG   = '#e4f3f9';
+const MID  = '#eff8fc';
+const BDR  = '#a0c8d8';
+const TXT  = '#08263a';
+const LIGHT= '#1c5268';
+const MUTED= '#5a9ab8';
+const RED  = '#bf3b2e';
+const REDLT= '#e04b3c';
+const GRN  = '#2e8b57';
+
+function dpr() { return window.devicePixelRatio || 1; }
+function setupCanvas(cv, h) {
+  const r = dpr();
+  const w = cv.parentElement.clientWidth || 820;
+  cv.width  = w * r;
+  cv.height = h * r;
+  cv.style.width  = w + 'px';
+  cv.style.height = h + 'px';
+  const ctx = cv.getContext('2d');
+  ctx.scale(r, r);
+  return { ctx, W: w, H: h };
+}
+function grid(ctx, W, H, step=40) {
+  ctx.save();
+  ctx.strokeStyle = 'rgba(13,122,150,0.07)';
+  ctx.lineWidth = 1;
+  for (let x=0; x<=W; x+=step) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  for (let y=0; y<=H; y+=step) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+  ctx.restore();
+}
+function lbl(ctx, t, x, y, col=MUTED, sz=10, align='left') {
+  ctx.save(); ctx.fillStyle=col; ctx.font=`${sz}px "DM Mono",monospace`; ctx.textAlign=align; ctx.fillText(t,x,y); ctx.restore();
+}
+
+// ── Rad Type Chart ────────────────────────────────────────────────────────────
+(function() {
+  const cv = document.getElementById('radTypeChart');
+  if (!cv) return;
+  const { ctx, W, H } = setupCanvas(cv, 190);
+  ctx.fillStyle = BG; ctx.fillRect(0,0,W,H); grid(ctx,W,H,35);
+  const types = [
+    { n:'Alpha (α)', col:ACLT, stop:0.08, desc:'Stopped by paper or skin — dangerous if inhaled' },
+    { n:'Beta (β)',  col:AC,   stop:0.30, desc:'Penetrates skin — stopped by a few mm of plastic' },
+    { n:'Gamma (γ)',col:TXT,  stop:0.90, desc:'Passes through body — needs lead or thick concrete' },
+  ];
+  const rH = H/3, bs=160, be=W-190, bw=be-bs;
+  types.forEach((t, i) => {
+    const y = i*rH + rH/2;
+    lbl(ctx, t.n, 8, y+5, t.col, 11);
+    ctx.fillStyle = MID; ctx.fillRect(bs, y-10, bw, 20);
+    const fw = bw * t.stop;
+    const g = ctx.createLinearGradient(bs, 0, bs+fw, 0);
+    g.addColorStop(0, t.col+'44'); g.addColorStop(1, t.col);
+    ctx.fillStyle = g; ctx.fillRect(bs, y-10, fw, 20);
+    lbl(ctx, t.desc, be+12, y+4, t.col, 9);
+  });
+  ['Source','Paper','Skin','Plastic','1cm Lead','10cm+ Lead'].forEach((m, i, a) => {
+    const x = bs + (bw/(a.length-1))*i;
+    lbl(ctx, m, x, H-5, MUTED, 8, 'center');
+    ctx.strokeStyle = BDR; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H-16); ctx.stroke();
+  });
+})();
+
+// ── DNA Bar Chart ─────────────────────────────────────────────────────────────
+(function() {
+  const cv = document.getElementById('dnaBarChart'); if (!cv) return;
+  const { ctx, W, H } = setupCanvas(cv, 190);
+  ctx.fillStyle = BG; ctx.fillRect(0,0,W,H); grid(ctx,W,H,35);
+  const bars = [
+    { l:'Single-Strand\nBreaks',    v:1000, c:ACDK },
+    { l:'Base\nDamage',             v:600,  c:AC   },
+    { l:'DNA-Protein\nCrosslinks',  v:150,  c:ACLT },
+    { l:'Double-Strand\nBreaks',    v:40,   c:RED  },
+  ];
+  const max=1100, pad={l:50,r:30,t:18,b:58};
+  const gW=W-pad.l-pad.r, gH=H-pad.t-pad.b;
+  const bw=(gW/bars.length)*0.52, gap=(gW/bars.length)*0.48;
+  ctx.strokeStyle=BDR; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,pad.t+gH); ctx.lineTo(pad.l+gW,pad.t+gH); ctx.stroke();
+  bars.forEach((b,i) => {
+    const x = pad.l+gap/2+i*(bw+gap);
+    const bh = (b.v/max)*gH, y = pad.t+gH-bh;
+    const g = ctx.createLinearGradient(x,y+bh,x,y);
+    g.addColorStop(0,b.c+'44'); g.addColorStop(1,b.c);
+    ctx.fillStyle=g; ctx.fillRect(x,y,bw,bh);
+    ctx.strokeStyle=b.c; ctx.lineWidth=1; ctx.strokeRect(x,y,bw,bh);
+    lbl(ctx, b.v.toLocaleString(), x+bw/2, y-5, b.c, 10, 'center');
+    b.l.split('\n').forEach((ln,li) => lbl(ctx, ln, x+bw/2, pad.t+gH+17+li*13, LIGHT, 9, 'center'));
+  });
+  [0,250,500,750,1000].forEach(v => {
+    const y = pad.t+gH-(v/max)*gH;
+    lbl(ctx, v+'', pad.l-6, y+4, MUTED, 8, 'right');
+    ctx.strokeStyle=BDR; ctx.lineWidth=0.5; ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+gW,y); ctx.stroke();
+  });
+  lbl(ctx,'events per 1 Gy dose', W/2, H-3, MUTED, 8, 'center');
+})();
+
+// ── Inverse Square Law ────────────────────────────────────────────────────────
+(function() {
+  const cv = document.getElementById('inverseChart'); if (!cv) return;
+  const { ctx, W, H } = setupCanvas(cv, 230);
+  ctx.fillStyle=BG; ctx.fillRect(0,0,W,H); grid(ctx,W,H,40);
+  const pad={l:60,r:30,t:18,b:46};
+  const gW=W-pad.l-pad.r, gH=H-pad.t-pad.b;
+  ctx.strokeStyle=BDR; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,pad.t+gH); ctx.lineTo(pad.l+gW,pad.t+gH); ctx.stroke();
+  const pts = [];
+  for (let i=0;i<=100;i++) {
+    const d=0.5+i*0.15;
+    pts.push({ x:pad.l+(i/100)*gW, y:pad.t+gH-Math.min(1/(d*d),1)*gH });
+  }
+  ctx.fillStyle='rgba(13,122,150,0.06)';
+  ctx.beginPath(); ctx.moveTo(pts[0].x, pad.t+gH);
+  pts.forEach(p => ctx.lineTo(p.x, p.y));
+  ctx.lineTo(pts[pts.length-1].x, pad.t+gH); ctx.closePath(); ctx.fill();
+  const g = ctx.createLinearGradient(pad.l,0,pad.l+gW,0);
+  g.addColorStop(0,ACLT); g.addColorStop(1,ACDK+'44');
+  ctx.strokeStyle=g; ctx.lineWidth=2.5; ctx.lineJoin='round';
+  ctx.beginPath(); pts.forEach((p,i) => i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y)); ctx.stroke();
+  [[1,'1m','100%'],[2,'2m','25%'],[4,'4m','6%']].forEach(([dv,t1,t2]) => {
+    const pct=(dv-0.5)/(15.5-0.5), x=pad.l+pct*gW, y=pad.t+gH-Math.min(1/(dv*dv),1)*gH;
+    ctx.fillStyle=AC; ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle=ACDK; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,pad.t+gH); ctx.stroke(); ctx.setLineDash([]);
+    lbl(ctx,t1,x+5,y-4,AC,10); lbl(ctx,t2,x+5,y+12,MUTED,9);
+  });
+  lbl(ctx,'Intensity',10,pad.t+gH/2,LIGHT,10);
+  lbl(ctx,'Distance from source (metres) →',pad.l+gW/2,H-6,LIGHT,9,'center');
+  for (let d=0;d<=14;d+=2) lbl(ctx,d+'m',pad.l+(d/14)*gW,pad.t+gH+15,MUTED,8,'center');
+})();
+
+// ── Cancer Risk Chart ─────────────────────────────────────────────────────────
+(function() {
+  const cv = document.getElementById('cancerChart'); if (!cv) return;
+  const { ctx, W, H } = setupCanvas(cv, 210);
+  ctx.fillStyle=BG; ctx.fillRect(0,0,W,H); grid(ctx,W,H,40);
+  const pad={l:60,r:30,t:18,b:50};
+  const gW=W-pad.l-pad.r, gH=H-pad.t-pad.b;
+  ctx.strokeStyle=BDR; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,pad.t+gH); ctx.lineTo(pad.l+gW,pad.t+gH); ctx.stroke();
+  const pts=[{d:0,r:1},{d:10,r:1.05},{d:20,r:1.1},{d:50,r:1.3},{d:100,r:1.8},{d:200,r:2.8},{d:400,r:5},{d:600,r:8}];
+  const maxD=700, maxR=9;
+  ctx.fillStyle='rgba(13,122,150,0.05)';
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t+gH);
+  pts.forEach(p=>ctx.lineTo(pad.l+(p.d/maxD)*gW, pad.t+gH-((p.r-1)/(maxR-1))*gH));
+  ctx.lineTo(pad.l+(600/maxD)*gW,pad.t+gH); ctx.closePath(); ctx.fill();
+  const g=ctx.createLinearGradient(pad.l,0,pad.l+gW,0);
+  g.addColorStop(0,GRN); g.addColorStop(0.4,AC); g.addColorStop(1,REDLT);
+  ctx.strokeStyle=g; ctx.lineWidth=2.5;
+  ctx.beginPath(); pts.forEach((p,i)=>{const x=pad.l+(p.d/maxD)*gW,y=pad.t+gH-((p.r-1)/(maxR-1))*gH; i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}); ctx.stroke();
+  const tx=pad.l+(50/maxD)*gW;
+  ctx.strokeStyle=ACDK; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(tx,pad.t); ctx.lineTo(tx,pad.t+gH); ctx.stroke(); ctx.setLineDash([]);
+  lbl(ctx,'50 mSv annual limit',tx+5,pad.t+13,ACDK,9);
+  lbl(ctx,'Relative cancer risk',8,pad.t+gH/2,LIGHT,10);
+  lbl(ctx,'Cumulative dose (mSv) →',pad.l+gW/2,H-6,LIGHT,9,'center');
+  [0,100,200,300,400,500,600].forEach(d=>lbl(ctx,d+'',pad.l+(d/maxD)*gW,pad.t+gH+14,MUTED,8,'center'));
+  [1,3,5,7,9].forEach(r=>{const y=pad.t+gH-((r-1)/(maxR-1))*gH; lbl(ctx,r+'×',pad.l-6,y+4,MUTED,8,'right');});
+})();
+
+// ── DNA SVG ───────────────────────────────────────────────────────────────────
+(function() {
+  const svg = document.getElementById('dnaSVG'); if (!svg) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (t, a) => { const e=document.createElementNS(NS,t); Object.entries(a).forEach(([k,v])=>e.setAttribute(k,v)); return e; };
+  const tx = (s,x,y,c=MUTED,sz=9,anc='middle') => { const t=el('text',{x,y,'font-size':sz,fill:c,'text-anchor':anc,'font-family':'DM Mono,monospace'}); t.textContent=s; return t; };
+  const defs=el('defs',{}); const mkr=el('marker',{id:'arr',markerWidth:6,markerHeight:6,refX:3,refY:3,orient:'auto'});
+  mkr.appendChild(el('path',{d:'M0,0 L0,6 L6,3 z',fill:RED})); defs.appendChild(mkr); svg.appendChild(defs);
+  svg.appendChild(el('rect',{x:0,y:0,width:820,height:270,fill:BG}));
+  svg.appendChild(el('line',{x1:410,y1:10,x2:410,y2:262,stroke:BDR,'stroke-width':1,'stroke-dasharray':'4,4'}));
+  svg.appendChild(tx('Normal Replication (S Phase)', 205, 20, AC, 10));
+  svg.appendChild(tx('Radiation-Damaged DNA', 615, 20, RED, 10));
+  const bl=['A','T','G','C','A','T','G','C'];
+  for (let s=0;s<2;s++) {
+    const pts=Array.from({length:8},(_,i)=>`${78+s*196+Math.sin(i*.8+(s?Math.PI:0))*17},${40+i*25}`).join(' ');
+    svg.appendChild(el('polyline',{points:pts,fill:'none',stroke:s===0?AC:ACDK,'stroke-width':2.5,'stroke-linecap':'round'}));
+  }
+  for (let i=0;i<8;i++) {
+    const y=40+i*25, x1=78+Math.sin(i*.8)*17, x2=274+Math.sin(i*.8+Math.PI)*17;
+    svg.appendChild(el('line',{x1,y1:y,x2,y2:y,stroke:ACDK+'55','stroke-width':1.4}));
+    svg.appendChild(tx(bl[i],x1-11,y+4,AC,8)); svg.appendChild(tx(bl[7-i],x2+11,y+4,ACDK,8));
+  }
+  for (let i=0;i<5;i++) {
+    const y=40+i*25, x=78+Math.sin(i*.8)*17;
+    svg.appendChild(el('line',{x1:x,y1:y,x2:x-36,y2:y,stroke:GRN,'stroke-width':2,'stroke-dasharray':'4,2'}));
+    svg.appendChild(tx(bl[7-i],x-46,y+4,GRN,8));
+  }
+  svg.appendChild(tx('New strand being copied',155,248,GRN,8));
+  const rx=468;
+  for (let s=0;s<2;s++) {
+    const pts=[]; for (let i=0;i<8;i++) { if(i===3&&s===0)continue; pts.push(`${rx+s*196+Math.sin(i*.8+(s?Math.PI:0))*17},${40+i*25}`); }
+    svg.appendChild(el('polyline',{points:pts.join(' '),fill:'none',stroke:s===0?AC:ACDK,'stroke-width':2.5,'stroke-linecap':'round'}));
+  }
+  for (let i=0;i<8;i++) {
+    const y=40+i*25, x1=rx+Math.sin(i*.8)*17, x2=rx+196+Math.sin(i*.8+Math.PI)*17;
+    if (i===2) { svg.appendChild(el('line',{x1,y1:y,x2,y2:y,stroke:RED,'stroke-width':3})); svg.appendChild(tx('Crosslink',rx+98,y+13,RED,8)); }
+    else if (i===4) { svg.appendChild(el('line',{x1,y1:y,x2:rx+93,y2:y,stroke:RED,'stroke-width':1.5,'stroke-dasharray':'3,2'})); svg.appendChild(tx('✕ Strand Break',rx+98,y-4,RED,8)); }
+    else if (i===6) { svg.appendChild(el('line',{x1,y1:y,x2,y2:y,stroke:ACDK+'55','stroke-width':1.4})); svg.appendChild(tx('X',x1-11,y+4,RED,8)); svg.appendChild(tx('?',x2+11,y+4,ACLT,8)); svg.appendChild(tx('Wrong Base',rx+98,y+13,RED,8)); }
+    else { svg.appendChild(el('line',{x1,y1:y,x2,y2:y,stroke:ACDK+'55','stroke-width':1.4})); svg.appendChild(tx(bl[i],x1-11,y+4,AC,8)); svg.appendChild(tx(bl[7-i],x2+11,y+4,ACDK,8)); }
+  }
+  svg.appendChild(el('line',{x1:690,y1:48,x2:648,y2:86,stroke:RED,'stroke-width':2,'marker-end':'url(#arr)'}));
+  svg.appendChild(tx('☢ Radiation',698,44,RED,9,'left'));
+  svg.appendChild(tx('Multiple damage types during S phase replication',615,260,MUTED,8));
+})();
+
+// ── Meiosis SVG ───────────────────────────────────────────────────────────────
+(function() {
+  const svg = document.getElementById('meiosisSVG'); if (!svg) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const el=(t,a)=>{const e=document.createElementNS(NS,t);Object.entries(a).forEach(([k,v])=>e.setAttribute(k,v));return e};
+  const tx=(s,x,y,c=MUTED,sz=9,anc='middle')=>{const t=el('text',{x,y,'font-size':sz,fill:c,'text-anchor':anc,'font-family':'DM Mono,monospace'});t.textContent=s;return t};
+  const cellEl=(cx,cy,rx,ry,stroke,chrs=[])=>{const g=el('g',{});g.appendChild(el('ellipse',{cx,cy,rx,ry,fill:'none',stroke,'stroke-width':1.5}));chrs.forEach(c=>g.appendChild(el('rect',{x:cx+c.x-3.5,y:cy+c.y-6,width:7,height:12,rx:2,fill:c.col||AC,opacity:.9})));return g};
+  svg.appendChild(el('rect',{x:0,y:0,width:820,height:290,fill:BG}));
+  svg.appendChild(el('line',{x1:410,y1:10,x2:410,y2:282,stroke:BDR,'stroke-width':1,'stroke-dasharray':'4,4'}));
+  svg.appendChild(tx('Normal Meiosis',205,20,AC,10)); svg.appendChild(tx('Radiation-Damaged Meiosis',615,20,RED,10));
+  svg.appendChild(cellEl(205,68,58,36,AC,[{x:-16,y:0},{x:-5,y:0},{x:5,y:0},{x:16,y:0}]));
+  svg.appendChild(tx('Parent Cell (4 chromosomes)',205,115,MUTED,8));
+  svg.appendChild(tx('↓ Meiosis I',205,131,ACDK,9));
+  svg.appendChild(cellEl(148,168,40,25,ACDK,[{x:-9,y:0},{x:2,y:0}]));
+  svg.appendChild(cellEl(262,168,40,25,ACDK,[{x:-9,y:0},{x:2,y:0}]));
+  svg.appendChild(tx('↓ Meiosis II',205,204,ACDK,9));
+  [[90,252],[162,252],[248,252],[320,252]].forEach(([x,y])=>svg.appendChild(cellEl(x,y,26,17,AC,[{x:0,y:0}])));
+  svg.appendChild(tx('4 normal gametes — correct chromosome count',205,278,GRN,8));
+  svg.appendChild(cellEl(615,68,58,36,RED,[{x:-16,y:0},{x:-5,y:0},{x:5,y:0},{x:16,y:0}]));
+  svg.appendChild(tx('☢ radiation during Meiosis I',615,115,RED,8));
+  svg.appendChild(tx('↓ Non-disjunction!',615,130,RED,9));
+  svg.appendChild(cellEl(538,170,42,25,RED,[{x:-13,y:0},{x:-2,y:0},{x:9,y:0}]));
+  svg.appendChild(tx('3 chr',538,202,RED,8));
+  svg.appendChild(cellEl(692,170,42,25,RED,[{x:0,y:0}]));
+  svg.appendChild(tx('1 chr',692,202,RED,8));
+  svg.appendChild(tx('↓ Meiosis II',615,212,MUTED,9));
+  [[484,254,'n+1'],[555,254,'n'],[672,254,'n'],[745,254,'n−1']].forEach(([x,y,l])=>{svg.appendChild(cellEl(x,y,26,17,RED,[{x:0,y:0}]));svg.appendChild(tx(l,x,y+28,RED,8));});
+  svg.appendChild(tx('Gametes with wrong chromosome counts → genetic disorders',615,280,RED,8));
+})();
+
+// ── PMAT Interactive ──────────────────────────────────────────────────────────
+const pmatData = [
+  {
+    name:'Prophase',
+    normal:'Chromosomes become visible as they coil up, becoming shorter and thicker. The nuclear envelope begins to break down. <strong>Spindle fibres</strong> form — protein threads that will later pull the chromosomes apart.',
+    damaged:'Radiation damages chromosomes while they are condensing, causing <strong>breaks and fragments</strong>. Some pieces may be lost entirely. Spindle fibres can fail to form, meaning chromosomes won\'t be sorted correctly in later stages.'
+  },
+  {
+    name:'Metaphase',
+    normal:'All chromosomes line up neatly in the middle of the cell (the <strong>metaphase plate</strong>). Each chromosome is attached to spindle fibres from both sides, ready to be pulled apart. This is the stage scientists use to count chromosomes.',
+    damaged:'Radiation-damaged spindle fibres fail to attach properly. Some chromosomes may not line up at all, or get attached from the wrong side. This <strong>misalignment</strong> means chromosomes will be pulled to the wrong daughter cell.'
+  },
+  {
+    name:'Anaphase',
+    normal:'Spindle fibres shorten and pull <strong>sister chromatids</strong> to opposite ends of the cell. Each end receives a complete, identical set of chromosomes. The cell begins to elongate.',
+    damaged:'Fragmented chromosomes cannot separate cleanly. <strong>Chromosome bridges</strong> form — pieces stretched between both sides. When they snap, random pieces go to each end, leaving both daughter cells with incomplete genetic information.'
+  },
+  {
+    name:'Telophase',
+    normal:'A new nuclear envelope forms at each end of the cell. Chromosomes uncoil. The cell divides into <strong>two identical daughter cells</strong>, each with a correct and complete set of chromosomes.',
+    damaged:'Any error from earlier stages produces cells with <strong>wrong chromosome counts</strong>. Lost chromosome fragments may form separate tiny nuclei called <em>micronuclei</em>. These abnormal daughter cells are the starting point for uncontrolled growth — cancer.'
+  }
+];
+
+function drawPMAT(stage) {
+  const cv = document.getElementById('pmat'+stage); if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const W = cv.offsetWidth || 110, H = 100;
+  cv.width = W; cv.height = H;
+  ctx.fillStyle = BG; ctx.fillRect(0,0,W,H);
+  const cx=W/2, cy=H/2, r=Math.min(W,H)*0.4;
+  ctx.strokeStyle = BDR; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.ellipse(cx,cy,r,r*0.82,0,0,Math.PI*2); ctx.stroke();
+  if (stage===0) {
+    ctx.strokeStyle=AC; ctx.lineWidth=2.2;
+    for (let i=0;i<4;i++) { const a=(i/4)*Math.PI*2, x=cx+Math.cos(a)*r*.46, y=cy+Math.sin(a)*r*.4; ctx.beginPath(); ctx.arc(x,y,5,0,Math.PI*2); ctx.stroke(); ctx.beginPath(); ctx.arc(x+5,y-2,3,0,Math.PI*2); ctx.stroke(); }
+    ctx.strokeStyle=ACDK; ctx.lineWidth=1; ctx.setLineDash([3,4]); ctx.beginPath(); ctx.ellipse(cx,cy,r*.5,r*.44,0,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
+  } else if (stage===1) {
+    ctx.strokeStyle=ACDK; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(cx,cy-r*.58); ctx.lineTo(cx,cy+r*.58); ctx.stroke();
+    ctx.fillStyle=AC; for (let i=0;i<4;i++) { const y=cy-r*.4+i*(r*.27); ctx.fillRect(cx-6,y,12,7); }
+    ctx.strokeStyle=ACDK+'66'; ctx.lineWidth=1;
+    for (let i=0;i<4;i++) { const y=cy-r*.36+i*(r*.27)+3; ctx.beginPath(); ctx.moveTo(cx-r*.62,cy); ctx.lineTo(cx-6,y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(cx+r*.62,cy); ctx.lineTo(cx+6,y); ctx.stroke(); }
+  } else if (stage===2) {
+    ctx.strokeStyle=BDR; ctx.lineWidth=1.5; ctx.beginPath(); ctx.ellipse(cx,cy,r,r*1.06,0,0,Math.PI*2); ctx.stroke();
+    ctx.fillStyle=AC; for (let i=0;i<3;i++) { ctx.fillRect(cx-7,cy-r*.65+i*13,13,7); ctx.fillRect(cx-7,cy+r*.26+i*13,13,7); }
+  } else {
+    ctx.strokeStyle=AC; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.ellipse(cx,cy-r*.36,r*.52,r*.3,0,0,Math.PI*2); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(cx,cy+r*.36,r*.52,r*.3,0,0,Math.PI*2); ctx.stroke();
+    ctx.strokeStyle=ACDK; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(cx-r*.26,cy); ctx.lineTo(cx+r*.26,cy); ctx.stroke();
+    ctx.fillStyle=AC+'88'; ctx.fillRect(cx-6,cy-r*.36-4,12,6); ctx.fillRect(cx-6,cy+r*.36-4,12,6);
+  }
+}
+
+function selectPMAT(stage) {
+  document.querySelectorAll('.pmat-card').forEach((c,i) => c.classList.toggle('active', i===stage));
+  document.getElementById('pmatNormal').innerHTML  = pmatData[stage].normal;
+  document.getElementById('pmatDamaged').innerHTML = pmatData[stage].damaged;
+  document.getElementById('pmatDetail').classList.add('show');
+}
+
+window.addEventListener('load', () => {
+  for (let i=0;i<4;i++) drawPMAT(i);
+  selectPMAT(0);
+});
+
+// ── Scroll reveal ─────────────────────────────────────────────────────────────
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+}, { threshold: 0.07 });
+document.querySelectorAll('.section').forEach(s => io.observe(s));
+
+// ── Progress bar ──────────────────────────────────────────────────────────────
+const pb = document.getElementById('progress');
+const sb = document.getElementById('scrollTop');
+window.addEventListener('scroll', () => {
+  const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+  pb.style.width = pct + '%';
+  sb.classList.toggle('show', window.scrollY > 400);
+  const ez = document.getElementById('part-emergency');
+  if (ez) pb.style.background = ez.getBoundingClientRect().top < 100
+    ? 'linear-gradient(to right,#8f2a20,#e04b3c)'
+    : 'linear-gradient(to right,#085c72,#29aece)';
+});
+
+// ── Active nav link ───────────────────────────────────────────────────────────
+const navLinks = document.querySelectorAll('#mainNav .nav-links a');
+const secEls   = document.querySelectorAll('section[id], div[id]');
+window.addEventListener('scroll', () => {
+  let cur = '';
+  secEls.forEach(s => { if (s.getBoundingClientRect().top <= 120) cur = s.id; });
+  navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#'+cur));
+}, { passive: true });
+
+
+// ──────────────────────────────────────────────────
+//  DISTANCE SLIDER
+// ──────────────────────────────────────────────────
+function updateDistSlider(v) {
+  v = parseFloat(v);
+  const baseRate = 10; // mSv/hr at 1m (Zone 3)
+  const rate = baseRate / (v * v);
+  const reduction = Math.round((1 - rate / baseRate) * 100);
+  const barPct = Math.min(100, (rate / baseRate) * 100);
+
+  document.getElementById('distVal').textContent  = v + ' m';
+  document.getElementById('distDose').textContent  = rate < 0.01 ? rate.toFixed(4) : rate < 1 ? rate.toFixed(3) : rate.toFixed(2);
+  document.getElementById('distReduction').textContent = reduction + '%';
+  document.getElementById('distBar').style.width = barPct + '%';
+
+  const doseEl = document.getElementById('distDose');
+  const redEl  = document.getElementById('distReduction');
+  const cls = rate > 20 ? 'danger' : rate > 5 ? 'warn' : '';
+  ['danger','warn'].forEach(c => { doseEl.classList.remove(c); redEl.classList.remove(c); });
+  if (cls) { doseEl.classList.add(cls); }
+
+  const barFill = document.getElementById('distBar');
+  barFill.style.background = rate > 20
+    ? 'linear-gradient(to right,#8f2a20,#e04b3c)'
+    : rate > 5
+    ? 'linear-gradient(to right,#a07818,#d4a020)'
+    : 'linear-gradient(to right,var(--ac-dk),var(--ac-lt))';
+
+  const pct = Math.round((v / 200) * 100);
+  const slider = document.getElementById('distSlider');
+  if (slider) slider.style.setProperty('--pct', pct + '%');
+}
+updateDistSlider(5);
+
+// Sync slider track fill on input
+document.getElementById('distSlider')?.addEventListener('input', function() {
+  const pct = Math.round((this.value / this.max) * 100);
+  this.style.setProperty('--pct', pct + '%');
+});
+
+// ──────────────────────────────────────────────────
+//  DOSE CALCULATOR
+// ──────────────────────────────────────────────────
+function calcDose() {
+  const rate  = parseFloat(document.getElementById('calcZone')?.value || 3);
+  const mins  = parseFloat(document.getElementById('calcTime')?.value || 30);
+  if (isNaN(mins) || mins <= 0) return;
+  const dose  = (rate * mins) / 60;
+  const pct   = (dose / 20) * 100;
+
+  const numEl  = document.getElementById('doseNum');
+  const statEl = document.getElementById('doseStatus');
+  const advEl  = document.getElementById('doseAdvice');
+  const resEl  = document.getElementById('doseResult');
+
+  numEl.textContent = dose < 0.1 ? dose.toFixed(3) : dose < 10 ? dose.toFixed(2) : dose.toFixed(1);
+  numEl.textContent += ' mSv';
+
+  ['safe','low','warn','high','crit'].forEach(c => {
+    numEl.classList.remove(c); statEl.classList.remove(c); resEl.classList.remove(c);
+  });
+
+  let cls, status, advice;
+  if (dose < 1) {
+    cls='safe'; status='Well within limit';
+    advice = `Estimated dose is ${numEl.textContent}. No restrictions. Monitor dosimeter routinely.`;
+  } else if (dose < 10) {
+    cls='low'; status='Within daily limit';
+    advice = `Estimated dose is ${numEl.textContent} — ${pct.toFixed(0)}% of your 20 mSv shift limit. Remain vigilant.`;
+  } else if (dose < 20) {
+    cls='warn'; status='Approaching shift limit';
+    advice = `Estimated dose is ${numEl.textContent} — ${pct.toFixed(0)}% of your shift limit. Consider reducing time or rotating out early.`;
+  } else if (dose < 50) {
+    cls='high'; status='⚠ Exceeds shift limit';
+    advice = `Estimated dose is ${numEl.textContent}. This EXCEEDS your 20 mSv shift limit. Do NOT proceed without RSO authorisation. Maximum safe time at this rate: ${Math.floor(20/rate*60)} minutes.`;
+  } else {
+    cls='crit'; status='🚨 Extremely dangerous';
+    advice = `Estimated dose is ${numEl.textContent}. This dose would cause acute radiation sickness. EVACUATE immediately. Do not enter without Class-IV suit and written clearance.`;
+  }
+
+  numEl.classList.add(cls); statEl.classList.add(cls); resEl.classList.add(cls);
+  statEl.textContent = status;
+  advEl.textContent  = advice;
+}
+calcDose();
+
+// ──────────────────────────────────────────────────
+//  SHIFT TIMER
+// ──────────────────────────────────────────────────
+let timerInterval = null;
+let timerDuration = 15 * 60; // seconds
+let timerRemaining = timerDuration;
+let timerRunning = false;
+
+function timerRender() {
+  const m = Math.floor(timerRemaining / 60);
+  const s = timerRemaining % 60;
+  const str = m + ':' + String(s).padStart(2,'0');
+  const svgTxt = document.getElementById('timerSvgText');
+  if (svgTxt) { svgTxt.textContent = str; }
+
+  const pctDone = 1 - timerRemaining / timerDuration;
+  const circ = 2 * Math.PI * 34; // r=34
+  const ring = document.getElementById('timerRingFill');
+  if (ring) {
+    ring.setAttribute('stroke-dashoffset', (circ * (1 - pctDone)).toFixed(2));
+    const urgent = timerRemaining <= 60;
+    ring.setAttribute('stroke', urgent ? '#e04b3c' : 'var(--ac)');
+    if (svgTxt) svgTxt.setAttribute('fill', urgent ? '#e04b3c' : 'var(--ac)');
+  }
+}
+
+function timerToggle() {
+  const btn = document.getElementById('timerStart');
+  if (timerRunning) {
+    clearInterval(timerInterval); timerInterval = null;
+    timerRunning = false;
+    if (btn) btn.textContent = 'Resume';
+  } else {
+    if (timerRemaining <= 0) timerRemaining = timerDuration;
+    timerRunning = true;
+    if (btn) btn.textContent = 'Pause';
+    timerInterval = setInterval(() => {
+      timerRemaining--;
+      timerRender();
+      if (timerRemaining <= 0) {
+        clearInterval(timerInterval); timerRunning = false;
+        if (btn) btn.textContent = 'Restart';
+        // Flash the timer card
+        const tc = document.getElementById('shiftTimer');
+        if (tc) { tc.style.borderColor='var(--red)'; setTimeout(()=>tc.style.borderColor='',3000); }
+      }
+    }, 1000);
+  }
+}
+
+function timerReset() {
+  clearInterval(timerInterval); timerRunning = false;
+  timerRemaining = timerDuration;
+  timerRender();
+  const btn = document.getElementById('timerStart');
+  if (btn) btn.textContent = 'Start';
+  const tc = document.getElementById('shiftTimer');
+  if (tc) tc.style.borderColor = '';
+}
+
+function timerSetCustom() {
+  const input = prompt('Set rotation interval (minutes):', '15');
+  if (input && !isNaN(input) && parseInt(input) > 0) {
+    timerDuration = parseInt(input) * 60;
+    timerReset();
+  }
+}
+
+timerRender();
+
+// ──────────────────────────────────────────────────
+//  TAPPABLE EMERGENCY CHECKLISTS
+// ──────────────────────────────────────────────────
+function toggleCheck(event, id) {
+  const li = event.target.closest('li');
+  if (!li) return;
+  li.classList.toggle('checked');
+  updateCheckProgress(id);
+}
+
+function resetChecklist(event, id) {
+  event.stopPropagation();
+  const ul = document.getElementById('cl' + id);
+  if (!ul) return;
+  ul.querySelectorAll('li.checked').forEach(li => li.classList.remove('checked'));
+  updateCheckProgress(id);
+}
+
+function updateCheckProgress(id) {
+  const ul  = document.getElementById('cl' + id);
+  const bar = document.getElementById('clbar' + id);
+  const pct = document.getElementById('clpct' + id);
+  if (!ul) return;
+  const total   = ul.querySelectorAll('li').length;
+  const checked = ul.querySelectorAll('li.checked').length;
+  const p = total > 0 ? Math.round((checked / total) * 100) : 0;
+  if (bar) bar.style.width = p + '%';
+  if (pct) pct.textContent = checked + ' / ' + total + ' done';
+}
+
+// Init all progress bars
+['1','2','3'].forEach(id => updateCheckProgress(id));
+
+
+// ────────────────────────────────────────────────────────
+//  GEIGER COUNTER VISUALISER
+// ────────────────────────────────────────────────────────
+const geigerZones = {
+  1: { rate:0.4, color:'#0d7a96', label:'Safe',     lvl:'Safe' },
+  2: { rate:3,   color:'#0d7a96', label:'Low',      lvl:'Low' },
+  3: { rate:12,  color:'#c07a10', label:'Elevated',  lvl:'Elevated' },
+  4: { rate:60,  color:'#bf3b2e', label:'High',      lvl:'High' }
+};
+let gZone = 1;
+let geigerHistory = Array(220).fill(0);
+let geigerAnimId  = null;
+let geigerTick    = 0;
+
+function setGeigerZone(z, btn) {
+  gZone = z;
+  document.querySelectorAll('.geiger-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const info = geigerZones[z];
+  const rateEl = document.getElementById('geigerRate');
+  if (rateEl) {
+    rateEl.textContent = info.rate.toFixed(1);
+    ['warn','danger'].forEach(c => rateEl.classList.remove(c));
+    if (z === 4) rateEl.classList.add('danger');
+    else if (z === 3) rateEl.classList.add('warn');
+  }
+  const lvlEl = document.getElementById('meterLevel');
+  if (lvlEl) lvlEl.textContent = info.lvl;
+}
+
+function drawGeiger() {
+  const cv = document.getElementById('geigerCanvas');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  const info = geigerZones[gZone];
+
+  // Simulate a tick
+  geigerTick++;
+  const tickRate = info.rate;       // approx ticks/sec at this zone
+  const threshold = 1 / tickRate / 0.016; // frames between ticks
+  if (Math.random() < (1 / threshold)) {
+    const spike = 0.4 + Math.random() * 0.6;
+    geigerHistory[geigerHistory.length - 1] = spike;
+  }
+  // Decay all values
+  geigerHistory = geigerHistory.map(v => Math.max(0, v * 0.82));
+  geigerHistory.push(0); geigerHistory.shift();
+
+  // Draw
+  ctx.fillStyle = '#e8f5fa';
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid lines
+  ctx.strokeStyle = 'rgba(13,122,150,0.08)'; ctx.lineWidth = 1;
+  for (let x = 0; x < W; x += 20) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  for (let y = 0; y < H; y += 15) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+  // Waveform
+  const g = ctx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, info.color + 'cc');
+  g.addColorStop(1, info.color + '11');
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.moveTo(0, H);
+  geigerHistory.forEach((v, i) => ctx.lineTo(i, H - v * (H - 4) - 2));
+  ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
+
+  // Line
+  ctx.strokeStyle = info.color; ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  geigerHistory.forEach((v, i) => { const y = H - v*(H-4)-2; i===0?ctx.moveTo(i,y):ctx.lineTo(i,y); });
+  ctx.stroke();
+
+  geigerAnimId = requestAnimationFrame(drawGeiger);
+}
+
+window.addEventListener('load', () => { setGeigerZone(1, document.querySelector('.geiger-btn.active')); drawGeiger(); });
+
+// ────────────────────────────────────────────────────────
+//  SHIELDING CALCULATOR
+// ────────────────────────────────────────────────────────
+function calcShield() {
+  const hvl   = parseFloat(document.getElementById('shieldMat')?.value || 5.5);
+  const thick = parseFloat(document.getElementById('shieldThick')?.value || 15);
+  document.getElementById('shieldThickVal').textContent = thick + ' cm';
+  const pct  = thick / thick; // just track
+  document.getElementById('shieldThick').style.setProperty('--pct', Math.round((thick/60)*100)+'%');
+
+  const transmitted = Math.pow(0.5, thick / hvl) * 100;
+  const blocked = 100 - transmitted;
+
+  document.getElementById('shieldBarOut').style.height     = Math.max(1, transmitted) + '%';
+  document.getElementById('shieldBarBlocked').style.height = blocked + '%';
+  document.getElementById('shieldOutPct').textContent      = transmitted.toFixed(1) + '%';
+  document.getElementById('shieldBlockPct').textContent    = blocked.toFixed(1) + '%';
+
+  const outEl = document.getElementById('shieldOutPct');
+  const vEl   = document.getElementById('shieldVerdict');
+  const vTxt  = document.getElementById('shieldVerdictText');
+
+  outEl.style.color = transmitted > 50 ? 'var(--red)' : transmitted > 20 ? '#c07a10' : 'var(--ac)';
+  document.getElementById('shieldBarOut').style.background =
+    transmitted > 50 ? 'linear-gradient(to top,#8f2a20,#e04b3c)'
+    : transmitted > 20 ? 'linear-gradient(to top,#a07818,#d4a020)'
+    : 'linear-gradient(to top,var(--ac-dk),var(--ac-lt))';
+
+  ['good','ok','warn','bad'].forEach(c => vEl.classList.remove(c));
+  let cls, icon, msg;
+  if (blocked >= 90) {
+    cls='good'; icon='🛡️'; msg = `<strong>Excellent shielding.</strong> ${blocked.toFixed(1)}% of gamma radiation is absorbed. Only ${transmitted.toFixed(1)}% passes through. This is sufficient for Zone 3 operations.`;
+  } else if (blocked >= 70) {
+    cls='ok'; icon='✅'; msg = `<strong>Adequate shielding.</strong> ${blocked.toFixed(1)}% blocked. Suitable for brief Zone 2–3 entry with dosimeter monitoring.`;
+  } else if (blocked >= 40) {
+    cls='warn'; icon='⚠️'; msg = `<strong>Partial shielding only.</strong> ${transmitted.toFixed(1)}% still passes through. Use additional materials or increase thickness. Not sufficient for elevated zones.`;
+  } else {
+    cls='bad'; icon='🚫'; msg = `<strong>Insufficient shielding.</strong> ${transmitted.toFixed(1)}% passes through this barrier. Do not rely on this material alone in any elevated radiation zone.`;
+  }
+  vEl.classList.add(cls);
+  document.querySelector('.shield-verdict-icon').textContent = icon;
+  vTxt.innerHTML = msg;
+}
+window.addEventListener('load', calcShield);
+
+// ────────────────────────────────────────────────────────
+//  SYMPTOM TRIAGE
+// ────────────────────────────────────────────────────────
+function triageTap(el) {
+  el.classList.toggle('selected');
+  triageUpdate();
+}
+function triageReset() {
+  document.querySelectorAll('.tchip.selected').forEach(c => c.classList.remove('selected'));
+  triageUpdate();
+}
+function triageUpdate() {
+  const sel = [...document.querySelectorAll('.tchip.selected')];
+  const maxSev = sel.reduce((m, c) => Math.max(m, parseInt(c.dataset.sev||0)), 0);
+  const count  = sel.length;
+  const rEl = document.getElementById('triageResult');
+  const tEl = document.getElementById('triageSevTitle');
+  const dEl = document.getElementById('triageSevText');
+  ['none','low','high','crit'].forEach(c => rEl.classList.remove(c));
+  let icon, cls, title, text;
+  if (count === 0) {
+    cls='none'; icon='✅'; title='No symptoms selected';
+    text='Select any symptoms you are experiencing above. The triage checker will update instantly.';
+  } else if (maxSev <= 1) {
+    cls='none'; icon='🟡'; title='Mild — Monitor closely';
+    text='Your selected symptoms are common mild reactions. <strong>Report to Medical for assessment</strong> but this is not an emergency. Record your dosimeter reading and rest.';
+  } else if (maxSev === 2) {
+    cls='low'; icon='🟠'; title='Moderate — Report to Medical now';
+    text='You are showing moderate symptoms. <strong>Stop work immediately</strong> and go to Medical Bay for dosimetry assessment. Do not wait to see if symptoms improve. Bring your dosimeter reading.';
+  } else if (maxSev === 3) {
+    cls='high'; icon='🔴'; title='Severe — Urgent medical attention required';
+    text='Severe radiation exposure symptoms detected. <strong>Call KMC-1 immediately</strong>. Do not move unless instructed. Lie down, stay calm. Have someone stay with you until medical personnel arrive.';
+  } else {
+    cls='crit'; icon='🚨'; title='Critical — Emergency — Call KMC-1 now';
+    text='<strong>CRITICAL SYMPTOMS. Call KMC-1 immediately.</strong> Vomiting or bleeding within 30 minutes of exposure indicates an extremely high dose. This is a life-threatening medical emergency. Do not leave alone.';
+  }
+  rEl.classList.add(cls);
+  document.querySelector('.triage-sev-icon').textContent = icon;
+  tEl.textContent  = title;
+  dEl.innerHTML    = text;
+}
+
+// ────────────────────────────────────────────────────────
+//  KNOWLEDGE QUIZ
+// ────────────────────────────────────────────────────────
+const quizQs = [
+  {
+    q: 'You are working in Zone 3 and your dosimeter reads 18 mSv. What should you do?',
+    opts: ['Continue working — the shift limit is 20 mSv and you have 2 mSv remaining',
+           'Stop work immediately and report to Medical',
+           'Swap with a colleague and continue the task for another 2 minutes',
+           'Take a Rad-Block tablet and continue for 30 more minutes'],
+    ans: 1,
+    exp: 'At 18 mSv — 90% of your shift limit — you should stop and report to Medical. The 20 mSv limit is a ceiling, not a target. Pushing to the limit repeatedly damages DNA repair systems over time.'
+  },
+  {
+    q: 'The inverse square law means that if you double your distance from a radiation source, your exposure becomes:',
+    opts: ['Half as much (÷2)', 'One quarter as much (÷4)', 'One third as much (÷3)', 'One eighth as much (÷8)'],
+    ans: 1,
+    exp: 'The inverse square law: intensity ∝ 1/d². Double the distance → (2)² = 4× reduction. This is why even a few extra metres dramatically reduces your dose.'
+  },
+  {
+    q: 'Which stage of the cell cycle makes DNA most vulnerable to radiation damage?',
+    opts: ['G1 phase (cell growth)', 'S phase (DNA synthesis)', 'G2 phase (growth before division)', 'M phase (mitosis)'],
+    ans: 1,
+    exp: 'S phase is when the DNA double helix is unzipped for copying — single-stranded DNA is far more vulnerable to radiation than the double-helical form. Double-strand breaks during S phase are especially dangerous.'
+  },
+  {
+    q: 'A colonist reports vomiting 20 minutes after a radiation event. What does this indicate?',
+    opts: ['Normal anxiety response — reassure and monitor', 'Moderate exposure — schedule Medical appointment for tomorrow',
+           'Sign of a very high dose — this is a medical emergency', 'Reaction to Rad-Block tablets'],
+    ans: 2,
+    exp: 'Vomiting within 30 minutes of exposure is a clinical indicator of acute radiation syndrome from a very high dose. It requires immediate medical response — call KMC-1 now.'
+  },
+  {
+    q: 'What is the maximum safe outdoor activity window on Kamino?',
+    opts: ['0000 – 1200 hrs', '0600 – 1800 hrs', '0400 – 2200 hrs', 'There is no restriction — suit up and monitor'],
+    ans: 2,
+    exp: 'Cosmic ray penetration peaks between 2200 and 0400. Outdoor tasks are banned during this window. The approved window is 0400–2200 hrs local time.'
+  },
+  {
+    q: 'Which of the following provides the LEAST radiation shielding?',
+    opts: ['30 cm durasteel wall', 'Class-IV anti-rad suit', 'Standard clone trooper armour', 'Viewport blast cover'],
+    ans: 2,
+    exp: 'Standard clone trooper armour provides zero radiation shielding. It is designed for physical protection only. Never assume your uniform shields you from radiation.'
+  },
+  {
+    q: 'During a radiation emergency, after getting inside shelter, what is the correct next action?',
+    opts: ['Call your supervisor to report your location',
+           'Seal doors and windows, remove clothing worn during exposure',
+           'Go back out briefly to warn any colleagues you saw outside',
+           'Take a Rad-Block tablet and wait by the nearest exit'],
+    ans: 1,
+    exp: 'Once inside: seal the room, cover viewports, remove and bag contaminated clothing. Do NOT go back outside — every second of additional exposure adds to your dose.'
+  },
+  {
+    q: 'Radiation-induced non-disjunction during meiosis is dangerous primarily because:',
+    opts: ['It causes immediate acute radiation sickness symptoms',
+           'It damages the spindle fibres needed for mitosis',
+           'The resulting gametes have wrong chromosome counts, which can be inherited by offspring',
+           'It increases the rate of DNA crosslinks in somatic cells'],
+    ans: 2,
+    exp: 'Non-disjunction produces gametes with the wrong number of chromosomes (aneuploidy). Because these are sex cells, the error can be passed to the next generation — unlike somatic cell mutations which die with the individual.'
+  }
+];
+
+let quizIdx   = 0;
+let quizScore = 0;
+let quizAnswered = false;
+
+function quizRender() {
+  const body = document.getElementById('quizBody');
+  if (!body) return;
+  if (quizIdx >= quizQs.length) {
+    // Show result
+    const pct = Math.round((quizScore / quizQs.length) * 100);
+    const pass = pct >= 75;
+    body.innerHTML = `<div class="quiz-score">
+      <div class="quiz-score-num${pass?'':' fail'}">${quizScore}/${quizQs.length}</div>
+      <div class="quiz-score-label">${pass ? '✅ Shift Clearance Granted' : '⚠ Review Required'}</div>
+      <div class="quiz-score-text">${pass
+        ? `You scored ${pct}%. You have demonstrated sufficient knowledge of Kamino radiation protocols. You are cleared for your next shift.`
+        : `You scored ${pct}%. A score of 75% or above is required for shift clearance. Please re-read the sections you found difficult and try again.`}</div>
+      <button class="quiz-retry" onclick="quizRestart()">Retake Quiz</button>
+    </div>`;
+    document.getElementById('quizProgFill').style.width = '100%';
+    document.getElementById('quizProgText').textContent = `${quizScore} / ${quizQs.length} correct`;
+    return;
+  }
+  const q = quizQs[quizIdx];
+  quizAnswered = false;
+  document.getElementById('quizProgFill').style.width = ((quizIdx / quizQs.length)*100) + '%';
+  document.getElementById('quizProgText').textContent = `${quizIdx} of ${quizQs.length}`;
+  const markers = ['A','B','C','D'];
+  body.innerHTML = `<div class="quiz-q">
+    <div class="quiz-q-num">Question ${quizIdx+1} of ${quizQs.length}</div>
+    <div class="quiz-q-text">${q.q}</div>
+    <div class="quiz-options">
+      ${q.opts.map((o,i) => `<button class="quiz-opt" onclick="quizAnswer(${i})" id="qopt${i}">
+        <span class="quiz-opt-marker">${markers[i]}</span>${o}
+      </button>`).join('')}
+    </div>
+    <div id="quizExplain" style="display:none"></div>
+    <div class="quiz-nav" id="quizNav" style="display:none">
+      <button class="quiz-next" onclick="quizNext()">${quizIdx === quizQs.length-1 ? 'See Results' : 'Next Question →'}</button>
+    </div>
+  </div>`;
+}
+
+function quizAnswer(i) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  const q = quizQs[quizIdx];
+  document.querySelectorAll('.quiz-opt').forEach((btn, idx) => {
+    btn.disabled = true;
+    if (idx === q.ans) btn.classList.add('correct');
+    else if (idx === i && i !== q.ans) btn.classList.add('wrong');
+    else btn.classList.add('reveal');
+  });
+  if (i === q.ans) quizScore++;
+  const expEl = document.getElementById('quizExplain');
+  expEl.style.display = 'block';
+  expEl.className = 'quiz-explain';
+  expEl.innerHTML = `<strong>${i === q.ans ? '✓ Correct.' : '✗ Incorrect.'}</strong> ${q.exp}`;
+  document.getElementById('quizNav').style.display = 'flex';
+}
+
+function quizNext() {
+  quizIdx++;
+  quizRender();
+}
+
+function quizRestart() {
+  quizIdx = 0; quizScore = 0; quizAnswered = false;
+  quizRender();
+}
+
+window.addEventListener('load', quizRender);
+
+</script>
+</body>
+</html>
